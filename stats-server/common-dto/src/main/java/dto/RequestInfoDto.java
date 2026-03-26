@@ -1,5 +1,6 @@
 package dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -20,6 +21,8 @@ public class RequestInfoDto {
 
             @NotNull(message = "Время события обязательно")
             @PastOrPresent(message = "Время не может быть в будущем")
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
             LocalDateTime timestamp
     ) {}
 

@@ -1,4 +1,4 @@
-package model;
+package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,5 +14,6 @@ public class RequestInfo {
     private String app;
     private String uri;
     private String ip;
+    @Column(name = "date")
     private LocalDateTime timestamp;
 }

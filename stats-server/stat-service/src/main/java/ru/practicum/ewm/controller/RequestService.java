@@ -3,8 +3,8 @@ package ru.practicum.ewm.controller;
 
 import dto.RequestInfoDto;
 import lombok.RequiredArgsConstructor;
-import mapper.RequestMapper;
-import model.RequestInfo;
+import ru.practicum.ewm.mapper.RequestMapper;
+import ru.practicum.ewm.model.RequestInfo;
 import org.springframework.stereotype.Service;
 
 @Service

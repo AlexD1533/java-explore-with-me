@@ -1,7 +1,8 @@
-package mapper;
+package ru.practicum.ewm.mapper;
 
 import dto.RequestInfoDto;
-import model.RequestInfo;
+import org.springframework.stereotype.Component;
+import ru.practicum.ewm.model.RequestInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
