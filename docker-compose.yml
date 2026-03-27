@@ -1,5 +1,7 @@
 services:
   stats-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
     build:
       context: ./
       dockerfile: stats-service/stats-server/Dockerfile
