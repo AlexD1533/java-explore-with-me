@@ -1,6 +1,6 @@
 package ru.practicum.ewm.repository;
 
-public interface VisitView {
+public interface ViewStats {
     String getApp();
 
     String getUri();

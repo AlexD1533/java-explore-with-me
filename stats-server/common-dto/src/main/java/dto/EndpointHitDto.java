@@ -7,9 +7,9 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
-public class RequestInfoDto {
+public class EndpointHitDto {
 
-    public record NewRequestInfoDto(
+    public record NewEndpointHitDto(
             @NotBlank(message = "Название приложения не может быть пустым")
             String app,
 
@@ -26,5 +26,5 @@ public class RequestInfoDto {
             LocalDateTime timestamp
     ) {}
 
-    public record FullRequestInfoDto(Long id, String app, String uri, String ip, LocalDateTime timestamp) {}
+    public record FullEndpointHitDto(Long id, String app, String uri, String ip, LocalDateTime timestamp) {}
 }

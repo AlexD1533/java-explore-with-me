@@ -1,17 +1,17 @@
 package ru.practicum.ewm.mapper;
 
-import dto.RequestInfoDto;
+import dto.EndpointHitDto;
 
-import ru.practicum.ewm.model.RequestInfo;
+import ru.practicum.ewm.model.EndpointHit;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface RequestMapper {
 
-    RequestInfoDto.FullRequestInfoDto toFullDto(RequestInfo entity);
+    EndpointHitDto.FullEndpointHitDto toFullDto(EndpointHit entity);
 
     @Mapping(target = "id", ignore = true)
-    RequestInfo toEntity(RequestInfoDto.NewRequestInfoDto dto);
+    EndpointHit toEntity(EndpointHitDto.NewEndpointHitDto dto);
 
 }
