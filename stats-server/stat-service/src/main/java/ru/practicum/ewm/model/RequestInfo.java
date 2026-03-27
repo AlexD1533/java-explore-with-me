@@ -1,13 +1,15 @@
 package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "hit")
 @Data
 public class RequestInfo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
