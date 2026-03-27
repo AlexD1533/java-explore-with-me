@@ -10,12 +10,12 @@ services:
 
   stats-db:
     image: postgres:16.1
-    environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=ewm_db
+    ports:
+      - "5433:5432"
 
   ewm-service:
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
     build:
       context: ./
       dockerfile: ewm-service/Dockerfile
@@ -24,7 +24,5 @@ services:
 
   ewm-db:
     image: postgres:16.1
-    environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=ewm_db
+    ports:
+      - "5432:5432"
