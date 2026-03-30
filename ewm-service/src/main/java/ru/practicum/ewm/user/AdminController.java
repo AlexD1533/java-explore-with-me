@@ -1,5 +1,7 @@
 package ru.practicum.ewm.user;
 
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.category.CategoryDto;
 import ru.practicum.ewm.category.NewCategoryDto;
 import jakarta.validation.Valid;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/admin")
 @Slf4j
+@Validated
 @RequiredArgsConstructor
 public class AdminController {
 
@@ -45,7 +48,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public List<UserDto> getById(
-            @RequestParam (required = false) List<Integer> ids,
+            @RequestParam(required = false) List<Integer> ids,
             @RequestParam(defaultValue = "0") Integer from, // По умолчанию 0
             @RequestParam(defaultValue = "10") Integer size
 
@@ -64,9 +67,31 @@ public class AdminController {
         log.info("Категория: запрос на создание {}", request);
         validation.categoryNameValidation(request.name());
 
-        CategoryDto createdUser = categoryService.create(request);
-        log.info("Пользователь создан с id={}", createdUser.id());
-        return createdUser;
+        CategoryDto createdCategory= categoryService.create(request);
+        log.info("Пользователь создан с id={}", createdCategory.id());
+        return createdCategory;
+    }
+
+
+    @PatchMapping("/categories/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto updateCategory(
+            @PathVariable Long categoryId,
+            @RequestBody NewCategoryDto request) {
+        log.info("Категория: запрос на обновление {}", request);
+
+        CategoryDto updatedCategory = categoryService.update(categoryId, request);
+        log.info("Категория обновлена с id={}", updatedCategory.id());
+        return updatedCategory;
+    }
+
+    @DeleteMapping("categories/{categoryId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long categoryId) {
+        log.info("Категория: запрос на удаление {}", categoryId);
+        categoryService.delete(categoryId);
+        log.info("Категория {} удалена", categoryId);
+
     }
 
 

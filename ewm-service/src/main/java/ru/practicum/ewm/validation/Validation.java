@@ -24,4 +24,10 @@ public class Validation {
             throw new DuplicatedDataException("Name " + name + " уже используется");
         }
     }
+
+    public void categoryIdValidation(Long id) {
+        if (categoryRepository.findById(id).isPresent()) {
+            throw new DuplicatedDataException("Id " + id + " уже используется");
+        }
+    }
 }
