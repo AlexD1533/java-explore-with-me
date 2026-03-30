@@ -1,5 +1,8 @@
 package ru.practicum.ewm.service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.practicum.ewm.dto.NewUserRequest;
 import ru.practicum.ewm.dto.UserDto;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +11,8 @@ import ru.practicum.ewm.mapper.UserMapper;
 import ru.practicum.ewm.model.User;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,4 +26,21 @@ public class UserService {
         User newUser = userRepository.save(userMapper.toUser(request));
         return userMapper.toUserDto(newUser);
     }
-}
+
+    public void delete(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public List<UserDto> searchUsersInfo(List<Integer> ids, Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
+
+        if (ids.isEmpty()) {
+            List<User> users = userRepository.findAll(pageable).getContent();
+            return users.stream()
+                    .map(userMapper::toUserDto)
+                    .toList();
+        }
+            return userRepository.findAllByIdIn(ids, pageable);
+        }
+    }
+

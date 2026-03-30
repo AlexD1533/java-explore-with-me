@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.UserService;
 import ru.practicum.ewm.validation.Validation;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/admin")
 @Slf4j
@@ -30,6 +32,30 @@ public class AdminController {
         log.info("Пользователь создан с id={}", createdUser.id());
         return createdUser;
     }
+
+    @DeleteMapping("users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long userId) {
+        log.info("Пользователь: запрос на удаление {}", userId);
+        userService.delete(userId);
+        log.info("Пользователь {} удален", userId);
+
+    }
+
+    @GetMapping("/users")
+    public List<UserDto> getById(
+            @RequestParam (required = false) List<Integer> ids,
+            @RequestParam(defaultValue = "0") Integer from, // По умолчанию 0
+            @RequestParam(defaultValue = "10") Integer size
+
+    ) {
+        log.info("Пользователь: запрос на получение информации");
+
+        List<UserDto> users = userService.searchUsersInfo(ids, from, size);
+        log.info("Результат поиска: {}", users);
+        return users;
+    }
+
 
 
 }
