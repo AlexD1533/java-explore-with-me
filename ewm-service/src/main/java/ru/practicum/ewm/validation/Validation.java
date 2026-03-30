@@ -1,12 +1,10 @@
 package ru.practicum.ewm.validation;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import ru.practicum.ewm.exception.DuplicatedDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.repository.CategoryRepository;
-import ru.practicum.ewm.repository.UserRepository;
+import ru.practicum.ewm.category.CategoryRepository;
+import ru.practicum.ewm.user.UserRepository;
 
 @Component
 @RequiredArgsConstructor
