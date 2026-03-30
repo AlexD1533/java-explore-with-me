@@ -1,5 +1,7 @@
 package ru.practicum.ewm.controller;
 
+import ru.practicum.ewm.dto.CategoryDto;
+import ru.practicum.ewm.dto.NewCategoryDto;
 import ru.practicum.ewm.dto.NewUserRequest;
 import ru.practicum.ewm.dto.UserDto;
 import jakarta.validation.Valid;
@@ -8,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.service.CategoryService;
 import ru.practicum.ewm.service.UserService;
 import ru.practicum.ewm.validation.Validation;
 
@@ -21,10 +25,11 @@ public class AdminController {
 
     private final Validation validation;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@Valid @RequestBody NewUserRequest request) {
+    public UserDto createUser(@Valid @RequestBody NewUserRequest request) {
         log.info("Пользователь: запрос на создание {}", request);
         validation.userEmailValidation(request.email());
 
@@ -56,6 +61,17 @@ public class AdminController {
         return users;
     }
 
+
+    @PostMapping("/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto request) {
+        log.info("Категория: запрос на создание {}", request);
+        validation.categoryNameValidation(request.name());
+
+        CategoryDto createdUser = categoryService.create(request);
+        log.info("Пользователь создан с id={}", createdUser.id());
+        return createdUser;
+    }
 
 
 }
