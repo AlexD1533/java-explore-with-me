@@ -1,21 +1,25 @@
-package ru.practicum.ewm.event;
+package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.*;
 import ru.practicum.ewm.location.LocationDto;
-import ru.practicum.ewm.user.StateActionAdmin;
 
-public record UpdateEventAdminRequest(
+public record NewEventDto(
+        @NotBlank
         @Size(min = 20, max = 2000)
         String annotation,
 
+        @NotNull
         Long category,
 
+        @NotBlank
         @Size(min = 20, max = 7000)
         String description,
 
+        @NotBlank
         String eventDate,
 
-        LocationDto locationDto,
+        @NotNull
+        LocationDto location,
 
         Boolean paid,
 
@@ -23,8 +27,7 @@ public record UpdateEventAdminRequest(
 
         Boolean requestModeration,
 
-        StateActionAdmin stateAction,
-
+        @NotBlank
         @Size(min = 3, max = 120)
         String title
 ) {}

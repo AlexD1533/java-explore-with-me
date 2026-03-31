@@ -1,77 +1,105 @@
 package ru.practicum.ewm.event;
+
+import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.Category;
-import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.ewm.location.LocationMapper;
-import ru.practicum.ewm.category.CategoryMapper;
-import ru.practicum.ewm.user.UserMapper;
+import ru.practicum.ewm.event.dto.*;
+import ru.practicum.ewm.location.Location;
+import ru.practicum.ewm.location.LocationDto;
+import ru.practicum.ewm.user.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Mapper(componentModel = "spring",
-        uses = {CategoryMapper.class, UserMapper.class, LocationMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public abstract class EventMapper {
+@Component
+public class EventMapper {
 
-    protected static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
-    protected CategoryMapper categoryMapper;
-
-    @Autowired
-    protected UserMapper userMapper;
-
-    @Autowired
-    protected LocationMapper locationMapper;
-
-    @Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "stringToLocalDateTime")
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdOn", ignore = true)
-    @Mapping(target = "publishedOn", ignore = true)
-    @Mapping(target = "state", ignore = true)
-    @Mapping(target = "confirmedRequests", ignore = true)
-    @Mapping(target = "views", ignore = true)
-    @Mapping(target = "initiator", ignore = true)
-    @Mapping(target = "category", ignore = true)
-    public abstract Event toEvent(NewEventDto newEventDto);
-
-    @Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "localDateTimeToString")
-    @Mapping(source = "createdOn", target = "createdOn", qualifiedByName = "localDateTimeToString")
-    @Mapping(source = "publishedOn", target = "publishedOn", qualifiedByName = "localDateTimeToString")
-    public abstract EventFullDto toEventFullDto(Event event);
-
-    @Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "localDateTimeToString")
-    public abstract EventShortDto toEventShortDto(Event event);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "stringToLocalDateTime")
-    @Mapping(target = "category", ignore = true)
-    @Mapping(target = "state", ignore = true)
-    public abstract void updateEventFromDto(UpdateEventAdminRequest dto, @MappingTarget Event event);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "eventDate", target = "eventDate", qualifiedByName = "stringToLocalDateTime")
-    @Mapping(target = "category", ignore = true)
-    @Mapping(target = "state", ignore = true)
-    public abstract void updateEventFromDto(UpdateEventUserRequest dto, @MappingTarget Event event);
-
-    @Named("localDateTimeToString")
-    protected String localDateTimeToString(LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.format(FORMATTER) : null;
+    public Event toEvent(NewEventDto dto, Long userId) {
+        return Event.builder()
+                .annotation(dto.annotation())
+                .category(Category.builder().id(dto.category()).build())
+                .description(dto.description())
+                .eventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER))
+                .location(toLocation(dto.location()))  // исправлено: locationDto()
+                .paid(dto.paid() != null ? dto.paid() : false)
+                .participantLimit(dto.participantLimit() != null ? dto.participantLimit() : 0)
+                .requestModeration(dto.requestModeration() != null ? dto.requestModeration() : true)
+                .state(EventState.PUBLISHED)
+                .title(dto.title())
+                .initiator(User.builder().id(userId).build())
+                .build();
     }
 
-    @Named("stringToLocalDateTime")
-    protected LocalDateTime stringToLocalDateTime(String dateTime) {
-        return dateTime != null ? LocalDateTime.parse(dateTime, FORMATTER) : null;
+    public EventFullDto toEventFullDto(Event event) {
+        return new EventFullDto(
+                event.getAnnotation(),
+                null,
+                event.getConfirmedRequests(),
+                event.getCreatedOn() != null ? event.getCreatedOn().format(FORMATTER) : null,
+                event.getDescription(),
+                event.getEventDate().format(FORMATTER),
+                event.getId(),
+                null,
+                toLocationDto(event.getLocation()),
+                event.getPaid(),
+                event.getParticipantLimit(),
+                event.getPublishedOn() != null ? event.getPublishedOn().format(FORMATTER) : null,
+                event.getRequestModeration(),
+                event.getState(),
+                event.getTitle(),
+                event.getViews()
+        );
     }
 
-    protected Category mapCategoryId(Long categoryId) {
-        if (categoryId == null) return null;
-        return Category.builder().id(categoryId).build();
+    public EventShortDto toEventShortDto(Event event) {
+        return new EventShortDto(
+                event.getAnnotation(),
+                null,
+                event.getConfirmedRequests(),
+                event.getEventDate().format(FORMATTER),
+                event.getId(),
+                null,
+                event.getPaid(),
+                event.getTitle(),
+                event.getViews()
+        );
     }
 
-    protected Long mapCategory(Category category) {
-        return category != null ? category.getId() : null;
+    public void updateEventFromDto(UpdateEventAdminRequest dto, Event event) {
+        if (dto.annotation() != null) event.setAnnotation(dto.annotation());
+        if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
+        if (dto.description() != null) event.setDescription(dto.description());
+        if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
+        if (dto.locationDto() != null) event.setLocation(toLocation(dto.locationDto()));  // исправлено
+        if (dto.paid() != null) event.setPaid(dto.paid());
+        if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
+        if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
+        if (dto.title() != null) event.setTitle(dto.title());
+    }
+
+    public void updateEventFromDto(UpdateEventUserRequest dto, Event event) {
+        if (dto.annotation() != null) event.setAnnotation(dto.annotation());
+        if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
+        if (dto.description() != null) event.setDescription(dto.description());
+        if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
+        if (dto.locationDto() != null) event.setLocation(toLocation(dto.locationDto()));  // исправлено
+        if (dto.paid() != null) event.setPaid(dto.paid());
+        if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
+        if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
+        if (dto.title() != null) event.setTitle(dto.title());
+    }
+
+    private Location toLocation(LocationDto dto) {
+        if (dto == null) return null;
+        return Location.builder()
+                .lat(dto.lat())
+                .lon(dto.lon())
+                .build();
+    }
+
+    private LocationDto toLocationDto(Location location) {
+        if (location == null) return null;
+        return new LocationDto(location.getLat(), location.getLon());
     }
 }

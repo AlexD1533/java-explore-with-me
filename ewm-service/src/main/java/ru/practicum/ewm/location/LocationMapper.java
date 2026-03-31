@@ -7,7 +7,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface LocationMapper {
 
-    LocationDto toLocationDto(LocationDto locationDto);
+    Location toLocation(LocationDto locationDto);
 
-    LocationDto toLocation(LocationDto locationDto);
+    LocationDto toLocationDto(Location location);
 }

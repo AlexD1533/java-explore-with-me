@@ -1,6 +1,6 @@
 package ru.practicum.ewm.compilation;
 
-import ru.practicum.ewm.event.EventShortDto;
+import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.Event;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;

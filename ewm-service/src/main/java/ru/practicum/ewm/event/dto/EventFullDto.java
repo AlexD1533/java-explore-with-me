@@ -1,7 +1,8 @@
-package ru.practicum.ewm.event;
+package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.*;
 import ru.practicum.ewm.category.CategoryDto;
+import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.location.LocationDto;
 import ru.practicum.ewm.user.UserShortDto;
 
@@ -9,7 +10,7 @@ public record EventFullDto(
         @NotBlank
         String annotation,
 
-        @NotNull
+
         CategoryDto category,
 
         Long confirmedRequests,

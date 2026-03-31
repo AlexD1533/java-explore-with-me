@@ -2,6 +2,7 @@ package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.user.User;
@@ -30,6 +31,7 @@ public class Event {
     private Long confirmedRequests;
 
     @Column(name = "created_on", nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdOn;
 
     @Column(nullable = false, length = 7000)
