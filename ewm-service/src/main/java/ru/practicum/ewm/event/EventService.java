@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,5 +21,13 @@ public class EventService {
         Event newEvent = eventRepository.save(eventMapper.toEvent(request, userId));
         return eventMapper.toEventFullDto(newEvent);
 
+    }
+
+    public EventFullDto getEventByIdByUserId(Long userId, Long eventId) {
+
+        Event targetEvent = eventRepository.findByIdAndInitiatorId(userId, eventId).orElseThrow(() ->
+               new NotFoundException("Событие не найдено"));
+
+        return eventMapper.toEventFullDto(targetEvent);
     }
 }

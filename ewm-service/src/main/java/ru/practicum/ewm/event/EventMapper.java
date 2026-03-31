@@ -1,17 +1,23 @@
 package ru.practicum.ewm.event;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.Category;
+import ru.practicum.ewm.category.CategoryMapper;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
 import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.user.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
+@RequiredArgsConstructor
 public class EventMapper {
+    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -34,13 +40,13 @@ public class EventMapper {
     public EventFullDto toEventFullDto(Event event) {
         return new EventFullDto(
                 event.getAnnotation(),
-                null,
+                categoryMapper.toCategoryDto(event.getCategory()),
                 event.getConfirmedRequests(),
                 event.getCreatedOn() != null ? event.getCreatedOn().format(FORMATTER) : null,
                 event.getDescription(),
                 event.getEventDate().format(FORMATTER),
                 event.getId(),
-                null,
+                userMapper.toUserShortDto(event.getInitiator()),
                 toLocationDto(event.getLocation()),
                 event.getPaid(),
                 event.getParticipantLimit(),
@@ -55,11 +61,11 @@ public class EventMapper {
     public EventShortDto toEventShortDto(Event event) {
         return new EventShortDto(
                 event.getAnnotation(),
-                null,
+                categoryMapper.toCategoryDto(event.getCategory()),
                 event.getConfirmedRequests(),
                 event.getEventDate().format(FORMATTER),
                 event.getId(),
-                null,
+                userMapper.toUserShortDto(event.getInitiator()),
                 event.getPaid(),
                 event.getTitle(),
                 event.getViews()
