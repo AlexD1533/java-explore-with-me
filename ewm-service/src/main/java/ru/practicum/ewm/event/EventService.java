@@ -3,12 +3,18 @@ package ru.practicum.ewm.event;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.CategoryDto;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,4 +49,13 @@ public class EventService {
         return eventMapper.toEventFullDto(eventRepository.save(event));
 
     }
+
+    public List<EventShortDto> searchEventsByUserId(@NotNull Long userId, Integer from, Integer size) {
+
+        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id").ascending());
+
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
+
+        return events.stream().map(eventMapper::toEventShortDto).toList();
+     }
 }

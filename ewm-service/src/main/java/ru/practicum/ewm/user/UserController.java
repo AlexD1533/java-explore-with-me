@@ -14,6 +14,7 @@ import ru.practicum.ewm.category.NewCategoryDto;
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.validation.Validation;
@@ -76,5 +77,20 @@ public class UserController {
         log.info("Событие обновлено с id={}", updatedEvent.id());
         return updatedEvent;
     }
+
+    @GetMapping("/{userId}/events")
+    public List<EventShortDto> getEventsById(
+            @NotNull @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        log.info("Событие: запрос на получение списка событий");
+        validation.userIdValidation(userId);
+
+        List<EventShortDto> events = eventService.searchEventsByUserId(userId, from, size);
+        log.info("Результат поиска: {}", events);
+        return events;
+    }
+
 
 }
