@@ -1,7 +1,5 @@
-package ru.practicum.ewm.user;
+package ru.practicum.ewm.practicipation;
 
-import ru.practicum.ewm.practicipation.ParticipationRequestDto;
-import ru.practicum.ewm.practicipation.ParticipationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

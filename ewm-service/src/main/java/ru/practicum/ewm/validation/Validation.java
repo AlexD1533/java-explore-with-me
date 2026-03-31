@@ -1,5 +1,6 @@
 package ru.practicum.ewm.validation;
 
+import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.exception.DuplicatedDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class Validation {
 
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-
+    private final EventRepository eventRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int HOURS_BEFORE_EVENT = 2;
 
@@ -58,6 +59,12 @@ public class Validation {
             throw new ValidationException(
                     "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента"
             );
+        }
+    }
+
+    public void eventIdValidation(Long eventId) {
+        if (eventRepository.findById(eventId).isEmpty()) {
+            throw new DuplicatedDataException("eventId " + eventId + " не существует");
         }
     }
 }

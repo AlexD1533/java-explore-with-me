@@ -5,18 +5,18 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.category.CategoryDto;
-import ru.practicum.ewm.category.NewCategoryDto;
+
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
+import ru.practicum.ewm.practicipation.ParticipationRequestDto;
+import ru.practicum.ewm.practicipation.ParticipationService;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -32,6 +32,7 @@ public class UserController {
     private final Validation validation;
     private final UserRepository userRepository;
     private final EventService eventService;
+    private final ParticipationService participationService;
 
 
     @PostMapping("/{userId}/events")
@@ -61,6 +62,7 @@ public class UserController {
         log.info("Результат поиска: {}", event);
         return event;
     }
+
     @PatchMapping("/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(
@@ -92,5 +94,19 @@ public class UserController {
         return events;
     }
 
+
+    @GetMapping("/{userId}/events/{eventId}/requests")
+    public List<ParticipationRequestDto> getParticipationIdByUserIdAndEventId(
+            @NotNull @PathVariable Long userId,
+            @NotNull @PathVariable Long eventId
+
+    ) {
+        log.info("Запрос на участие: запрос на получение информации");
+        validation.userIdValidation(userId);
+        validation.eventIdValidation(eventId);
+        List<ParticipationRequestDto> participations = participationService.getParticipationByUserIdAndEventId(userId, eventId);
+        log.info("Запросы на участие с id:{}", participations);
+        return participations;
+    }
 
 }
