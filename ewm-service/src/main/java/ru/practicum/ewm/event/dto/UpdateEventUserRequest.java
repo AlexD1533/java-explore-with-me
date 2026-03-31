@@ -15,7 +15,7 @@ public record UpdateEventUserRequest(
 
         String eventDate,
 
-        LocationDto locationDto,
+        LocationDto location,
 
         Boolean paid,
 

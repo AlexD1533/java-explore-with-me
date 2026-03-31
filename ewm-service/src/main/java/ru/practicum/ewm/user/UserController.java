@@ -9,10 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.category.CategoryDto;
+import ru.practicum.ewm.category.NewCategoryDto;
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
+import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -57,6 +60,21 @@ public class UserController {
         log.info("Результат поиска: {}", event);
         return event;
     }
+    @PatchMapping("/{userId}/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateEvent(
+            @NotNull @PathVariable Long eventId,
+            @NotNull @PathVariable Long userId,
+            @Valid @RequestBody UpdateEventUserRequest request) {
+        log.info("Событие: запрос на обновление {}", request);
 
+        validation.userIdValidation(userId);
+        validation.validateEventDate(request.eventDate());
+
+
+        EventFullDto updatedEvent = eventService.updateEvent(eventId, userId, request);
+        log.info("Событие обновлено с id={}", updatedEvent.id());
+        return updatedEvent;
+    }
 
 }

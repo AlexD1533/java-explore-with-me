@@ -7,6 +7,7 @@ import ru.practicum.ewm.category.CategoryMapper;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
+import ru.practicum.ewm.user.StateActionUser;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserMapper;
 
@@ -31,7 +32,7 @@ public class EventMapper {
                 .paid(dto.paid() != null ? dto.paid() : false)
                 .participantLimit(dto.participantLimit() != null ? dto.participantLimit() : 0)
                 .requestModeration(dto.requestModeration() != null ? dto.requestModeration() : true)
-                .state(EventState.PUBLISHED)
+                .state(EventState.PENDING)
                 .title(dto.title())
                 .initiator(User.builder().id(userId).build())
                 .build();
@@ -89,11 +90,16 @@ public class EventMapper {
         if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
-        if (dto.locationDto() != null) event.setLocation(toLocation(dto.locationDto()));  // исправлено
+        if (dto.location() != null) event.setLocation(toLocation(dto.location()));  // исправлено
         if (dto.paid() != null) event.setPaid(dto.paid());
         if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
         if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
         if (dto.title() != null) event.setTitle(dto.title());
+        if (dto.stateAction() !=null) {
+            if (dto.stateAction().equals(StateActionUser.CANCEL_REVIEW)) event.setState(EventState.CANCELED);
+            if (dto.stateAction().equals(StateActionUser.SEND_TO_REVIEW)) event.setState(EventState.PENDING);
+
+        }
     }
 
     private Location toLocation(LocationDto dto) {

@@ -47,8 +47,12 @@ public class Validation {
 
 
     public void validateEventDate(String eventDateStr) {
+        if (eventDateStr == null) {
+            return;
+        }
         LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, FORMATTER);
         LocalDateTime minDate = LocalDateTime.now().plusHours(HOURS_BEFORE_EVENT);
+
 
         if (eventDate.isBefore(minDate)) {
             throw new ValidationException(
