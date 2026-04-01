@@ -35,4 +35,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE e.id = :id")
     Optional<Event> findByIdWithDetails(Long id);
 
+
+
+
 }

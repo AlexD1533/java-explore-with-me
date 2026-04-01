@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.CategoryService;
+import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -25,6 +28,7 @@ public class AdminController {
     private final Validation validation;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final AdminService adminService;
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
@@ -84,6 +88,27 @@ public class AdminController {
         log.info("Категория обновлена с id={}", updatedCategory.id());
         return updatedCategory;
     }
+
+
+
+    @PatchMapping("/events/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateEventAdmin(
+            @NotNull @PathVariable Long eventId,
+            @NotNull @PathVariable Long userId,
+            @Valid @RequestBody UpdateEventAdminRequest request) {
+        log.info("Событие: запрос на обновление {}", request);
+
+        validation.validateEventDateAdminUpdate(request.eventDate());
+
+        EventFullDto updatedEvent = adminService.updateEventAdmin(eventId, request);
+        log.info("Событие обновлено с id={}", updatedEvent.id());
+        return updatedEvent;
+    }
+
+
+
+
 
     @DeleteMapping("categories/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

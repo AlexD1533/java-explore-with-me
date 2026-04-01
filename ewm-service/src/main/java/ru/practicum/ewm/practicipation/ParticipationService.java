@@ -39,7 +39,7 @@ public class ParticipationService {
                         .toList());
 
 
-        System.out.println("/////////////////" + requests);
+
 
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
 
@@ -57,8 +57,10 @@ public class ParticipationService {
 
     public ParticipationRequestDto createRequestEvent(Long userId, Long eventId) {
 
-        Event event= eventRepository.findByIdAndInitiatorId(userId, eventId).orElseThrow(() ->
+        Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
+
+        System.out.println("req!!!");
 
         validation.dublicateRequests(userId, event);
         validation.currentUserValidation(userId, event);

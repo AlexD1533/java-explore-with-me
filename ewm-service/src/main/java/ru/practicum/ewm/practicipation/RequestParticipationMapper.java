@@ -24,7 +24,6 @@ public class RequestParticipationMapper {
         );
     }
 
-    // Маппинг в сущность из Event и userId
     public ParticipationRequest toParticipationRequest(Event event, Long userId) {
         if (event == null || userId == null) return null;
 

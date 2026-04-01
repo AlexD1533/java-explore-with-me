@@ -10,7 +10,6 @@ public record EventFullDto(
         @NotBlank
         String annotation,
 
-
         CategoryDto category,
 
         Long confirmedRequests,
@@ -19,18 +18,14 @@ public record EventFullDto(
 
         String description,
 
-        @NotBlank
         String eventDate,
 
         Long id,
 
-        @NotNull
         UserShortDto initiator,
 
-        @NotNull
-        LocationDto locationDto,
+        LocationDto location,
 
-        @NotNull
         Boolean paid,
 
         Integer participantLimit,
@@ -41,7 +36,6 @@ public record EventFullDto(
 
         EventState state,
 
-        @NotBlank
         String title,
 
         Long views

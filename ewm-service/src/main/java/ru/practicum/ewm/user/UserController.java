@@ -3,6 +3,7 @@ package ru.practicum.ewm.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,9 +56,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequestEvent(
                                            @NotNull @PathVariable Long userId,
-                                           @NotNull @RequestParam Long eventId) {
-        log.info("Запрос: запрос на учаcтие");
-        validation.userIdValidation(userId);
+                                           @NotNull @Positive @RequestParam Long eventId) {
+        log.info("Запрос: запрос на участие");
+        //validation.userIdValidation(userId);
+
 
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
         log.info("Запрос создан с id={}", createdRequest.id());
@@ -81,7 +83,7 @@ public class UserController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventFullDto updateEvent(
+    public EventFullDto updateEventUser(
             @NotNull @PathVariable Long eventId,
             @NotNull @PathVariable Long userId,
             @Valid @RequestBody UpdateEventUserRequest request) {

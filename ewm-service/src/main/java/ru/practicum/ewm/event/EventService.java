@@ -28,10 +28,8 @@ public class EventService {
 
         Event newEvent = eventRepository.save(eventMapper.toEvent(request, userId));
 
-        System.out.println("//////////////////////////////////////");
         System.out.println("event  " + newEvent);
 
-        System.out.println("//////////////////////////////////////");
         System.out.println(eventMapper.toEventFullDto(newEvent));
         return eventMapper.toEventFullDto(newEvent);
 
@@ -48,10 +46,14 @@ public class EventService {
     public EventFullDto updateEvent(Long eventId, Long userId, UpdateEventUserRequest request) {
 
 
+
         Event event = eventRepository.findEventForUpdate(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+
+        System.out.println("update");
+
         System.out.println(event);
-        eventMapper.updateEvent(request, event);
+        eventMapper.updateEventUser(request, event);
 
         System.out.println(event);
 

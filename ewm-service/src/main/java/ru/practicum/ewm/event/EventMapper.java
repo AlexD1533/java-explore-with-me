@@ -7,9 +7,11 @@ import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
+import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.user.StateActionUser;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserMapper;
+import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,14 +22,21 @@ public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final ParticipationRepository participationRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Event toEvent(NewEventDto dto, Long userId) {
+
         Category category = new Category();
         if (dto.category() != null) {
            category = categoryRepository.findById(dto.category())
                     .orElseThrow(() -> new NotFoundException("Категории не существует"));
         }
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователя с id: "+ "не существует"));;
+
 
         return Event.builder()
                 .annotation(dto.annotation())
@@ -42,15 +51,19 @@ public class EventMapper {
                 .requestModeration(dto.requestModeration() != null ? dto.requestModeration() : true)
                 .state(EventState.PENDING)
                 .title(dto.title())
-                .initiator(User.builder().id(userId).build())
+                .initiator(user)
                 .build();
     }
 
     public EventFullDto toEventFullDto(Event event) {
+
+        Long confirmedRequests = participationRepository.countConfirmedRequests(event.getId());
+
+
         return new EventFullDto(
                 event.getAnnotation(),
                 categoryMapper.toCategoryDto(event.getCategory()),
-                event.getConfirmedRequests(),
+                confirmedRequests,
                 event.getCreatedOn() != null ? event.getCreatedOn().format(FORMATTER) : null,
                 event.getDescription(),
                 event.getEventDate().format(FORMATTER),
@@ -93,18 +106,16 @@ public class EventMapper {
         if (dto.title() != null) event.setTitle(dto.title());
     }
 
-    public void updateEvent(UpdateEventUserRequest dto, Event event) {
+    public void updateEventUser(UpdateEventUserRequest dto, Event event) {
+
+        Category category = categoryRepository.findById(dto.category())
+                .orElseThrow(() -> new NotFoundException("Категории не существует"));
+
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
-
-
-        if (dto.category() != null) {
-            Category category = categoryRepository.findById(dto.category())
-                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
-            event.setCategory(category);
-        }
+        event.setCategory(category);
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
-        if (dto.location() != null) event.setLocation(toLocation(dto.location()));  // исправлено
+        if (dto.location() != null) event.setLocation(toLocation(dto.location()));
         if (dto.paid() != null) event.setPaid(dto.paid());
         if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
         if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
@@ -127,5 +138,10 @@ public class EventMapper {
     private LocationDto toLocationDto(Location location) {
         if (location == null) return null;
         return new LocationDto(location.getLat(), location.getLon());
+    }
+
+    public void updateEventAdmin(UpdateEventAdminRequest request, Event event) {
+
+
     }
 }

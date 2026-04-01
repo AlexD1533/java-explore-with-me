@@ -112,4 +112,19 @@ public class Validation {
                     "У события достигнут лимит запросов на участие");
         }
     }
+
+    public void validateEventDateAdminUpdate(String s) {
+        if (s == null) {
+            return;
+        }
+        LocalDateTime eventDate = LocalDateTime.parse(s, FORMATTER);
+        LocalDateTime minDate = plusHours(HOURS_BEFORE_EVENT);
+
+
+        if (eventDate.isBefore(minDate)) {
+            throw new ValidationException(
+                    "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента"
+            );
+        }
+    }
 }
