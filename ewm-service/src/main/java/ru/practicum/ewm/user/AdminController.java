@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.CategoryService;
+import ru.practicum.ewm.event.EventService;
+import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
@@ -29,6 +31,7 @@ public class AdminController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final AdminService adminService;
+    private final EventService eventService;
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
@@ -99,15 +102,29 @@ public class AdminController {
             @Valid @RequestBody UpdateEventAdminRequest request) {
         log.info("Событие: запрос на обновление {}", request);
 
-        System.out.println("req!!!" + request + " " + eventId );
-
         EventFullDto updatedEvent = adminService.updateEventAdmin(eventId, request);
         log.info("Событие обновлено с id={}", updatedEvent.id());
         return updatedEvent;
     }
 
 
+    @GetMapping("/events")
+    public List<EventFullDto> getEventsByParamAdmin(
+            @RequestParam(required = false) List<Long> usersIds,
+            @RequestParam(required = false) List<String> stats,
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) String rangeStart,
+            @RequestParam(required = false) String rangeEnd,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size
 
+    ) {
+        log.info("События: запрос на получение информации");
+        System.out.println("rrr");
+        List<EventFullDto> events = eventService.searchEventsInfoByParm(usersIds, stats, categoryIds, rangeStart, rangeEnd, from, size);
+        log.info("Результат поиска: {}", events);
+        return events;
+    }
 
 
     @DeleteMapping("categories/{categoryId}")
