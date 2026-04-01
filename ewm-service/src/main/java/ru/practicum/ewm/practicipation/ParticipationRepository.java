@@ -17,14 +17,15 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "FROM ParticipationRequest AS p " +
             "JOIN p.event AS e " +
             "WHERE e.initiator.id = :userId AND e.id = :eventId " +
-            "AND (p.id IN :ids)" )
-    List<ViewRequest> findAllForUpdateByParam(@Param("ids") List<Integer> ids,
+            "AND (p.id IN :ids) " +
+            "AND (p.status = 'PENDING')" )
+    List<ViewRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
                                               @Param("eventId") Long eventId,
                                               @Param("userId") Long userId);
 
 @Query("SELECT COUNT(r) FROM ParticipationRequest AS r " +
         "JOIN r.event AS e " +
-        "WHERE e.id = :eventId AND r.status = 'CONFIRMED'")
+        "WHERE e.id = :eventId AND (r.status = 'CONFIRMED' OR r.status = 'PENDING')")
     Long countConfirmedRequests(@Param("eventId")Long eventId);
 
 

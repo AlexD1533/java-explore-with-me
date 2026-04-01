@@ -13,6 +13,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final Validation validation;
 
 
     public EventFullDto create(Long userId, NewEventDto request) {
@@ -37,29 +39,24 @@ public class EventService {
 
     public EventFullDto getEventByIdByUserId(Long userId, Long eventId) {
 
-        Event targetEvent = eventRepository.findByIdAndInitiatorId(userId, eventId).orElseThrow(() ->
+        Event targetEvent = eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() ->
                new NotFoundException("Событие не найдено"));
-
         return eventMapper.toEventFullDto(targetEvent);
     }
 
     public EventFullDto updateEvent(Long eventId, Long userId, UpdateEventUserRequest request) {
 
-
-
         Event event = eventRepository.findEventForUpdate(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+
+        validation.publicEventValidation(event);
 
         System.out.println("update");
 
         System.out.println(event);
         eventMapper.updateEventUser(request, event);
 
-        System.out.println(event);
-
-
         Event result = eventRepository.save(event);
-
 
         System.out.println(result);
 

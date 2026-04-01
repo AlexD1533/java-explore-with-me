@@ -57,6 +57,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") Integer size
 
     ) {
+        System.out.println(ids + " " +  from+ " " + size);
         log.info("Пользователь: запрос на получение информации");
 
         List<UserDto> users = userService.searchUsersInfo(ids, from, size);
@@ -94,12 +95,11 @@ public class AdminController {
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventAdmin(
-            @NotNull @PathVariable Long eventId,
-            @NotNull @PathVariable Long userId,
+            @PathVariable Long eventId,
             @Valid @RequestBody UpdateEventAdminRequest request) {
         log.info("Событие: запрос на обновление {}", request);
 
-        validation.validateEventDateAdminUpdate(request.eventDate());
+        System.out.println("req!!!" + request + " " + eventId );
 
         EventFullDto updatedEvent = adminService.updateEventAdmin(eventId, request);
         log.info("Событие обновлено с id={}", updatedEvent.id());

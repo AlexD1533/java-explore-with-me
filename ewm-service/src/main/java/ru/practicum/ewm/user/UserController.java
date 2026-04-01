@@ -55,12 +55,13 @@ public class UserController {
     @PostMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequestEvent(
-                                           @NotNull @PathVariable Long userId,
-                                           @NotNull @Positive @RequestParam Long eventId) {
+            @NotNull @PathVariable Long userId,
+            @NotNull @Positive @RequestParam Long eventId) {
         log.info("Запрос: запрос на участие");
-        //validation.userIdValidation(userId);
+        System.out.println("xxx");
+        validation.userIdValidation(userId);
 
-
+        System.out.println("zzz");
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
         log.info("Запрос создан с id={}", createdRequest.id());
         return createdRequest;
@@ -120,8 +121,11 @@ public class UserController {
 
     ) {
         log.info("Запрос на участие: запрос на получение информации");
+
         validation.userIdValidation(userId);
         validation.eventIdValidation(eventId);
+
+
         List<ParticipationRequestDto> participations = participationService.getParticipationByUserIdAndEventId(userId, eventId);
         log.info("Запросы на участие с id:{}", participations);
         return participations;
@@ -131,16 +135,13 @@ public class UserController {
     @PatchMapping("/{userId}/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequests(
-            @RequestBody EventRequestStatusUpdateRequest request,
+            @RequestBody(required = false) EventRequestStatusUpdateRequest request,
             @PathVariable Long userId,
             @PathVariable Long eventId
-            ) {
+    ) {
         log.info("Заявки: запрос на обновление статусов {}", request);
 
         validation.userIdValidation(userId);
-       validation.eventIdValidation(eventId);
-
-        System.out.println("///////////////////////" + request+ " " + eventId + " " + userId);
 
         EventRequestStatusUpdateResult result = participationService.updateRequests(eventId, userId, request);
         log.info("Статусы заявок обновлены");

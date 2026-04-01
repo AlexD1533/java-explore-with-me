@@ -8,10 +8,7 @@ import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
-import ru.practicum.ewm.user.StateActionUser;
-import ru.practicum.ewm.user.User;
-import ru.practicum.ewm.user.UserMapper;
-import ru.practicum.ewm.user.UserRepository;
+import ru.practicum.ewm.user.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,8 +54,11 @@ public class EventMapper {
 
     public EventFullDto toEventFullDto(Event event) {
 
+        System.out.println("asd");
         Long confirmedRequests = participationRepository.countConfirmedRequests(event.getId());
 
+
+        System.out.println("wer");
 
         return new EventFullDto(
                 event.getAnnotation(),
@@ -99,7 +99,7 @@ public class EventMapper {
         if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
-        if (dto.locationDto() != null) event.setLocation(toLocation(dto.locationDto()));  // исправлено
+        if (dto.location() != null) event.setLocation(toLocation(dto.location()));  // исправлено
         if (dto.paid() != null) event.setPaid(dto.paid());
         if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
         if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
@@ -108,11 +108,14 @@ public class EventMapper {
 
     public void updateEventUser(UpdateEventUserRequest dto, Event event) {
 
-        Category category = categoryRepository.findById(dto.category())
-                .orElseThrow(() -> new NotFoundException("Категории не существует"));
+
+        if (dto.category() != null) {
+            Category category = categoryRepository.findById(dto.category())
+                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
+            event.setCategory(category);
+        }
 
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
-        event.setCategory(category);
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
         if (dto.location() != null) event.setLocation(toLocation(dto.location()));
@@ -140,8 +143,26 @@ public class EventMapper {
         return new LocationDto(location.getLat(), location.getLon());
     }
 
-    public void updateEventAdmin(UpdateEventAdminRequest request, Event event) {
+    public void updateEventAdmin(UpdateEventAdminRequest dto, Event event) {
 
 
+
+        if (dto.category() != null) {
+            Category category = categoryRepository.findById(dto.category())
+                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
+            event.setCategory(category);
+        }
+        if (dto.annotation() != null) event.setAnnotation(dto.annotation());
+        if (dto.description() != null) event.setDescription(dto.description());
+        if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
+        if (dto.location() != null) event.setLocation(toLocation(dto.location()));
+        if (dto.paid() != null) event.setPaid(dto.paid());
+        if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
+        if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
+        if (dto.title() != null) event.setTitle(dto.title());
+        if (dto.stateAction() != null) {
+            if (dto.stateAction().equals(StateActionAdmin.REJECT_EVENT)) event.setState(EventState.CANCELED);
+            if (dto.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) event.setState(EventState.PUBLISHED);
+}
     }
 }

@@ -15,7 +15,7 @@ public record UpdateEventAdminRequest(
 
         String eventDate,
 
-        LocationDto locationDto,
+        LocationDto location,
 
         Boolean paid,
 

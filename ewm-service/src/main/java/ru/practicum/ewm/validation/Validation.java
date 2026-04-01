@@ -6,6 +6,7 @@ import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.DuplicatedDataException;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.practicipation.ParticipationService;
+import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -103,28 +105,52 @@ public class Validation {
         }
     }
 
+    public void publicEventValidation(Event event) {
+
+        if (event.getState().equals(EventState.PUBLISHED)) {
+            throw new ConflictException(
+                    "Изменить можно только отмененные события или события в состоянии ожидания модерации");
+        }
+    }
+
     public void limitRequestsValidation(Event event) {
 
         Integer requestCount = participationRepository.countByEventId(event.getId());
 
-        if (event.getParticipantLimit() >= requestCount) {
+        if (event.getParticipantLimit() <= requestCount) {
             throw new ConflictException(
                     "У события достигнут лимит запросов на участие");
         }
     }
 
-    public void validateEventDateAdminUpdate(String s) {
+    public void validateEventDateAdminUpdate(String s, LocalDateTime publishedOnTime) {
         if (s == null) {
             return;
         }
+
         LocalDateTime eventDate = LocalDateTime.parse(s, FORMATTER);
-        LocalDateTime minDate = plusHours(HOURS_BEFORE_EVENT);
+        LocalDateTime minDate = publishedOnTime.plusHours(1);
 
 
         if (eventDate.isBefore(minDate)) {
             throw new ValidationException(
                     "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента"
             );
+        }
+    }
+
+    public boolean isPublicStateEvent(Event event) {
+        return event.getState().equals(EventState.PUBLISHED);
+    }
+
+    public void publicEventValidation(UpdateEventAdminRequest request, Event event) {
+
+        if (isPublicStateEvent(event) && request.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
+            throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания публикации");
+        }
+
+        if (!isPublicStateEvent(event) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
+            throw new ConflictException("событие можно отклонить, только если оно еще не опубликовано");
         }
     }
 }
