@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.user.User;
-import ru.practicum.ewm.user.RequestStatus;
 
 import java.time.LocalDateTime;
 

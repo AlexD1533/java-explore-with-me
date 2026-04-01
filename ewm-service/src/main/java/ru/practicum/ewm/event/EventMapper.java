@@ -2,9 +2,9 @@ package ru.practicum.ewm.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.category.Category;
-import ru.practicum.ewm.category.CategoryMapper;
+import ru.practicum.ewm.category.*;
 import ru.practicum.ewm.event.dto.*;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
 import ru.practicum.ewm.user.StateActionUser;
@@ -19,16 +19,24 @@ import java.time.format.DateTimeFormatter;
 public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
-
+    private final CategoryRepository categoryRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Event toEvent(NewEventDto dto, Long userId) {
+        Category category = new Category();
+        if (dto.category() != null) {
+           category = categoryRepository.findById(dto.category())
+                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
+        }
+
         return Event.builder()
                 .annotation(dto.annotation())
-                .category(Category.builder().id(dto.category()).build())
+
+
+                .category(category)
                 .description(dto.description())
                 .eventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER))
-                .location(toLocation(dto.location()))  // исправлено: locationDto()
+                .location(toLocation(dto.location()))
                 .paid(dto.paid() != null ? dto.paid() : false)
                 .participantLimit(dto.participantLimit() != null ? dto.participantLimit() : 0)
                 .requestModeration(dto.requestModeration() != null ? dto.requestModeration() : true)
@@ -85,9 +93,15 @@ public class EventMapper {
         if (dto.title() != null) event.setTitle(dto.title());
     }
 
-    public void updateEventFromDto(UpdateEventUserRequest dto, Event event) {
+    public void updateEvent(UpdateEventUserRequest dto, Event event) {
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
-        if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
+
+
+        if (dto.category() != null) {
+            Category category = categoryRepository.findById(dto.category())
+                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
+            event.setCategory(category);
+        }
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
         if (dto.location() != null) event.setLocation(toLocation(dto.location()));  // исправлено
@@ -95,7 +109,7 @@ public class EventMapper {
         if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
         if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
         if (dto.title() != null) event.setTitle(dto.title());
-        if (dto.stateAction() !=null) {
+        if (dto.stateAction() != null) {
             if (dto.stateAction().equals(StateActionUser.CANCEL_REVIEW)) event.setState(EventState.CANCELED);
             if (dto.stateAction().equals(StateActionUser.SEND_TO_REVIEW)) event.setState(EventState.PENDING);
 

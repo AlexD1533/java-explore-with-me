@@ -1,7 +1,5 @@
 package ru.practicum.ewm.practicipation;
 
-import ru.practicum.ewm.user.RequestStatus;
-
 public record ParticipationRequestDto(
         String created,
         Long event,

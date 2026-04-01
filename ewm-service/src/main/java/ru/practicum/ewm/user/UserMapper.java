@@ -1,19 +1,25 @@
 package ru.practicum.ewm.user;
 
+import org.springframework.stereotype.Component;
 
+@Component
+public class UserMapper {
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+    public UserDto toUserDto(User user) {
+        if (user == null) return null;
+        return new UserDto(user.getId(), user.getName(), user.getEmail());
+    }
 
-@Mapper(componentModel = "spring",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface UserMapper {
+    public UserShortDto toUserShortDto(User user) {
+        if (user == null) return null;
+        return new UserShortDto(user.getId(), user.getName());
+    }
 
-    UserDto toUserDto(User user);
-
-    UserShortDto toUserShortDto(User user);
-
-    @Mapping(target = "id", ignore = true)
-    User toUser(NewUserRequest newUserRequest);
+    public User toUser(NewUserRequest dto) {
+        if (dto == null) return null;
+        return User.builder()
+                .name(dto.name())
+                .email(dto.email())
+                .build();
+    }
 }

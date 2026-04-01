@@ -15,6 +15,8 @@ import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
+import ru.practicum.ewm.practicipation.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.practicipation.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.practicipation.ParticipationRequestDto;
 import ru.practicum.ewm.practicipation.ParticipationService;
 import ru.practicum.ewm.validation.Validation;
@@ -46,6 +48,20 @@ public class UserController {
         EventFullDto createdEvent = eventService.create(userId, request);
         log.info("Событие создано с id={}", createdEvent.id());
         return createdEvent;
+    }
+
+
+    @PostMapping("/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ParticipationRequestDto createRequestEvent(
+                                           @NotNull @PathVariable Long userId,
+                                           @NotNull @RequestParam Long eventId) {
+        log.info("Запрос: запрос на учаcтие");
+        validation.userIdValidation(userId);
+
+        ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
+        log.info("Запрос создан с id={}", createdRequest.id());
+        return createdRequest;
     }
 
 
@@ -108,5 +124,26 @@ public class UserController {
         log.info("Запросы на участие с id:{}", participations);
         return participations;
     }
+
+
+    @PatchMapping("/{userId}/events/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
+    public EventRequestStatusUpdateResult updateRequests(
+            @RequestBody EventRequestStatusUpdateRequest request,
+            @PathVariable Long userId,
+            @PathVariable Long eventId
+            ) {
+        log.info("Заявки: запрос на обновление статусов {}", request);
+
+        validation.userIdValidation(userId);
+       validation.eventIdValidation(eventId);
+
+        System.out.println("///////////////////////" + request+ " " + eventId + " " + userId);
+
+        EventRequestStatusUpdateResult result = participationService.updateRequests(eventId, userId, request);
+        log.info("Статусы заявок обновлены");
+        return result;
+    }
+
 
 }

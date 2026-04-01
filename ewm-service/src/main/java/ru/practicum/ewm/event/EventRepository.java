@@ -17,11 +17,22 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 
 
-    @Query("SELECT e FROM  Event e " +
-            "WHERE e.id = :eventId AND e.initiator.id = :userId " +
-            "AND (e.state = 'CANCELED' OR e.state = 'PENDING')")
-    Optional<Event> findEventForUpdate(@Param("eventId") Long eventId,
-                                        @Param("userId") Long userId);
 
     List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
+
+
+    @Query("SELECT e FROM Event e " +
+            "LEFT JOIN FETCH e.category " +
+            "LEFT JOIN FETCH e.initiator " +
+            "LEFT JOIN FETCH e.location " +
+            "WHERE e.id = :eventId AND e.initiator.id = :userId")
+    Optional<Event> findEventForUpdate(Long eventId, Long userId);
+
+    @Query("SELECT e FROM Event e " +
+            "LEFT JOIN FETCH e.category " +
+            "LEFT JOIN FETCH e.initiator " +
+            "LEFT JOIN FETCH e.location " +
+            "WHERE e.id = :id")
+    Optional<Event> findByIdWithDetails(Long id);
+
 }

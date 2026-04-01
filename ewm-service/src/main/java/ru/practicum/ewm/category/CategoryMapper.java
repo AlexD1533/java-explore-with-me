@@ -1,18 +1,26 @@
 package ru.practicum.ewm.category;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public interface CategoryMapper {
+import org.springframework.stereotype.Component;
 
-    CategoryDto toCategoryDto(Category category);
+@Component
+public class CategoryMapper {
 
-    @Mapping(target = "id", ignore = true)
-    Category toCategory(NewCategoryDto newCategoryDto);
+    public CategoryDto toCategoryDto(Category category) {
+        if (category == null) return null;
+        return new CategoryDto(category.getId(), category.getName());
+    }
 
+    public Category toCategory(NewCategoryDto dto) {
+        if (dto == null) return null;
+        return Category.builder()
+                .name(dto.name())
+                .build();
+    }
 
-    void updateCategoryFromDto(NewCategoryDto dto, @MappingTarget Category category);
+    public void updateCategoryFromDto(NewCategoryDto dto, Category category) {
+        if (dto == null || category == null) return;
+        if (dto.name() != null) {
+            category.setName(dto.name());
+        }
+    }
 }

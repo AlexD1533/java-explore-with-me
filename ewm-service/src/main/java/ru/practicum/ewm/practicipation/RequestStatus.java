@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user;
+package ru.practicum.ewm.practicipation;
 public enum RequestStatus {
     PENDING,
     CONFIRMED,

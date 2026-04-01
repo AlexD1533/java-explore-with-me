@@ -1,11 +1,19 @@
 package ru.practicum.ewm.validation;
 
+import jakarta.validation.constraints.NotNull;
+import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
+import ru.practicum.ewm.event.EventService;
+import ru.practicum.ewm.event.EventState;
+import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.DuplicatedDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
+import ru.practicum.ewm.practicipation.ParticipationRepository;
+import ru.practicum.ewm.practicipation.ParticipationService;
 import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -18,6 +26,8 @@ public class Validation {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
+    private final ParticipationRepository participationRepository;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int HOURS_BEFORE_EVENT = 2;
 
@@ -65,6 +75,41 @@ public class Validation {
     public void eventIdValidation(Long eventId) {
         if (eventRepository.findById(eventId).isEmpty()) {
             throw new DuplicatedDataException("eventId " + eventId + " не существует");
+        }
+    }
+
+
+    public void dublicateRequests(Long userId, Event event) {
+
+        if (!participationRepository.findAllByEventIdAndRequesterId(userId, event.getId()).isEmpty()) {
+            throw new ConflictException(
+                    "Пользователь с id " + userId + "уже оставил заявку на участие в событие с id " + event.getId());
+        }
+    }
+
+    public void currentUserValidation(Long userId, Event event) {
+
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException(
+                    "Текущий пользователь при создании заявки на участие не может быть инициатором события");
+        }
+    }
+
+    public void noPublicEventValidation(Event event) {
+
+        if (event.getState().equals(EventState.CANCELED) || event.getState().equals(EventState.PENDING)) {
+            throw new ConflictException(
+                    "Нельзя участвовать в неопубликованном событии");
+        }
+    }
+
+    public void limitRequestsValidation(Event event) {
+
+        Integer requestCount = participationRepository.countByEventId(event.getId());
+
+        if (event.getParticipantLimit() >= requestCount) {
+            throw new ConflictException(
+                    "У события достигнут лимит запросов на участие");
         }
     }
 }
