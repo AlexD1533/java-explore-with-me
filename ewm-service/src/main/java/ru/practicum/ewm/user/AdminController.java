@@ -14,6 +14,7 @@ import ru.practicum.ewm.category.CategoryService;
 import ru.practicum.ewm.compilation.CompilationDto;
 import ru.practicum.ewm.compilation.CompilationService;
 import ru.practicum.ewm.compilation.NewCompilationDto;
+import ru.practicum.ewm.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
@@ -141,10 +142,30 @@ public class AdminController {
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto request) {
         log.info("Подборка: запрос на создание {}", request);
-        validation.compilationEventListValidation(request.events());
         CompilationDto createdCompilation = compilationService.create(request);
         log.info("Подборка создана с id={}", createdCompilation.id());
         return createdCompilation;
+    }
+
+    @DeleteMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCompilation(@PathVariable Long compId) {
+        log.info("Подборка: запрос на удаление {}", compId);
+        compilationService.delete(compId);
+        log.info("Категория {} удалена", compId);
+
+    }
+
+    @PatchMapping("/compilations/{compId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CompilationDto updateCompilation(
+            @PathVariable Long compId,
+            @Valid @RequestBody UpdateCompilationRequest request) {
+        log.info("Подборка: запрос на обновление {}", compId);
+
+        CompilationDto updatedCompilation = compilationService.updateCompilation(compId, request);
+        log.info("Подборка обновлена с id={}", updatedCompilation.id());
+        return updatedCompilation;
     }
 
 

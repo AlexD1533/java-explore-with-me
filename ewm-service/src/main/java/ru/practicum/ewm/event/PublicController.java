@@ -1,26 +1,32 @@
 package ru.practicum.ewm.event;
 
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.compilation.CompilationDto;
+import ru.practicum.ewm.compilation.CompilationService;
 import ru.practicum.ewm.event.dto.EventFullDto;
+import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/events")
+@RequestMapping
 @Slf4j
 @Validated
 @RequiredArgsConstructor
 public class PublicController {
 
     private final EventService eventService;
+    private final CompilationService compilationService;
 
-    @GetMapping
+    @GetMapping("/events")
     public List<EventFullDto> getEventsByParamPublic(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) List<Long> categories,
@@ -38,7 +44,7 @@ public class PublicController {
         return events;
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("/events/{eventId}")
     public EventFullDto getEventByIdPublic(
             @NotNull @PathVariable Long eventId
     ) {
@@ -49,5 +55,30 @@ public class PublicController {
         return event;
     }
 
+
+    @GetMapping("/compilations")
+    public List<CompilationDto> getCompilationsByParamPublic(
+            @RequestParam(required = false) Boolean pinned,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        log.info("Подборки: запрос на получение информации");
+
+        List<CompilationDto> compilations = compilationService.searchCompilationInfoByParmPublic(pinned, from, size);
+        log.info("Результат поиска: {}", compilations);
+        return compilations;
+    }
+
+
+    @GetMapping("/compilations/{compId}")
+    public CompilationDto getCompilationByIdPublic(
+            @NotNull @PathVariable Long compId
+    ) {
+        log.info("Подборка: запрос на получение информации");
+
+        CompilationDto compilation = compilationService.getCompilationByIdPublic(compId);
+        log.info("Результат поиска: {}", compilation);
+        return compilation;
+    }
 
 }
