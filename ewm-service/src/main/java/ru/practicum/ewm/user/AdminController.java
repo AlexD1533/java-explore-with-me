@@ -1,6 +1,6 @@
 package ru.practicum.ewm.user;
 
-import jakarta.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.category.CategoryDto;
 import ru.practicum.ewm.category.NewCategoryDto;
@@ -11,11 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.CategoryService;
+import ru.practicum.ewm.compilation.CompilationDto;
+import ru.practicum.ewm.compilation.CompilationService;
+import ru.practicum.ewm.compilation.NewCompilationDto;
 import ru.practicum.ewm.event.EventService;
-import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class AdminController {
     private final CategoryService categoryService;
     private final AdminService adminService;
     private final EventService eventService;
+    private final CompilationService compilationService;
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
@@ -133,6 +135,16 @@ public class AdminController {
         categoryService.delete(categoryId);
         log.info("Категория {} удалена", categoryId);
 
+    }
+
+    @PostMapping("/compilations")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto request) {
+        log.info("Подборка: запрос на создание {}", request);
+        validation.compilationEventListValidation(request.events());
+        CompilationDto createdCompilation = compilationService.create(request);
+        log.info("Подборка создана с id={}", createdCompilation.id());
+        return createdCompilation;
     }
 
 

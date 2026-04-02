@@ -20,6 +20,7 @@ import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -157,4 +158,9 @@ public class Validation {
     }
 
 
+    public void compilationEventListValidation(Set<Long> events) {
+        if (events.isEmpty()) {
+            throw new ValidationException("Подборка не может не содержать событий");
+        }
+    }
 }
