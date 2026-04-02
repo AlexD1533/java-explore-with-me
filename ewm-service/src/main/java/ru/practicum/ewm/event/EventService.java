@@ -37,9 +37,6 @@ public class EventService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
-
-
-
     public EventFullDto create(Long userId, NewEventDto request) {
 
         Category category = categoryRepository.findById(request.category())
@@ -53,86 +50,86 @@ public class EventService {
         System.out.println(eventMapper.toEventFullDto(newEvent));
         return eventMapper.toEventFullDto(newEvent);
 
-}
+    }
 
 
-public EventFullDto getEventByIdByUserId(Long userId, Long eventId) {
+    public EventFullDto getEventByIdByUserId(Long userId, Long eventId) {
 
-    Event targetEvent = eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() ->
-            new NotFoundException("Событие не найдено"));
-    return eventMapper.toEventFullDto(targetEvent);
-}
+        Event targetEvent = eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() ->
+                new NotFoundException("Событие не найдено"));
+        return eventMapper.toEventFullDto(targetEvent);
+    }
 
-public EventFullDto updateEvent(Long eventId, Long userId, UpdateEventUserRequest request) {
-
-
-
-    Event event = eventRepository.findEventForUpdate(eventId, userId)
-            .orElseThrow(() -> new NotFoundException("Событие не найдено"));
+    public EventFullDto updateEvent(Long eventId, Long userId, UpdateEventUserRequest request) {
 
 
-    validation.publicEventValidation(event);
-
-    Category category = (request.category() != null)
-            ? categoryRepository.findById(request.category())
-            .orElseThrow(() -> new NotFoundException("Категория не найдена"))
-            : event.getCategory();
-
-    eventMapper.updateEventUser(request, event, category);
-    event.setConfirmedRequests(getConfirmedRequests(eventId));
-    Event result = eventRepository.save(event);
-    return eventMapper.toEventFullDto(result);
-
-}
-
-public List<EventShortDto> searchEventsByUserId(@NotNull Long userId, Integer from, Integer size) {
-
-    Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
-    List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
-    return events.stream().map(eventMapper::toEventShortDto).toList();
-}
-
-public List<EventFullDto> searchEventsInfoByParm(List<Long> usersIds, List<String> states,
-                                                 List<Long> categoryIds, String rangeStart,
-                                                 String rangeEnd, Integer from, Integer size) {
+        Event event = eventRepository.findEventForUpdate(eventId, userId)
+                .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
 
-    LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
-    LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+        validation.publicEventValidation(event);
 
-    Pageable pageable = PageRequest.of(from / size, size);
+        Category category = (request.category() != null)
+                ? categoryRepository.findById(request.category())
+                .orElseThrow(() -> new NotFoundException("Категория не найдена"))
+                : event.getCategory();
 
-    List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
-            start, end, pageable);
+        event.setCategory(category);
+        event.setConfirmedRequests(getConfirmedRequests(eventId));
+        eventMapper.updateEventUser(request, event);
 
-    return events.stream().map(eventMapper::toEventFullDto).toList();
-}
+        Event result = eventRepository.save(event);
+        return eventMapper.toEventFullDto(result);
 
-public List<EventFullDto> searchEventsInfoByParmPulic(String text, List<Long> categories,
-                                                      Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+    }
 
-    LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
-    LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+    public List<EventShortDto> searchEventsByUserId(@NotNull Long userId, Integer from, Integer size) {
 
-    Pageable pageable = PageRequest.of(from / size, size);
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
+        return events.stream().map(eventMapper::toEventShortDto).toList();
+    }
 
-
-    List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
-            start, end, pageable);
-
-    return events.stream().map(eventMapper::toEventFullDto).toList();
-}
-
-public EventFullDto getEventByIdPublic(Long eventId) {
-    Event targetEvent = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED).orElseThrow(() ->
-            new NotFoundException("Событие не найдено"));
+    public List<EventFullDto> searchEventsInfoByParm(List<Long> usersIds, List<String> states,
+                                                     List<Long> categoryIds, String rangeStart,
+                                                     String rangeEnd, Integer from, Integer size) {
 
 
-    return eventMapper.toEventFullDto(targetEvent);
-}
+        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
+        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
+                start, end, pageable);
+
+        return events.stream().map(eventMapper::toEventFullDto).toList();
+    }
+
+    public List<EventFullDto> searchEventsInfoByParmPulic(String text, List<Long> categories,
+                                                          Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+
+        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
+        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+
+        List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
+                start, end, pageable);
+
+        return events.stream().map(eventMapper::toEventFullDto).toList();
+    }
+
+    public EventFullDto getEventByIdPublic(Long eventId) {
+        Event targetEvent = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED).orElseThrow(() ->
+                new NotFoundException("Событие не найдено"));
+
+        return eventMapper.toEventFullDto(targetEvent);
+    }
 
     public Long getConfirmedRequests(Long eventId) {
-        return  participationRepository.countConfirmedRequests(eventId);
+        return participationRepository.countConfirmedRequests(eventId);
 
     }
 

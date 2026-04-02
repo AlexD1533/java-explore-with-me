@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.category.CategoryRepository;
-import ru.practicum.ewm.event.Event;
-import ru.practicum.ewm.event.EventMapper;
-import ru.practicum.ewm.event.EventRepository;
-import ru.practicum.ewm.event.EventState;
+import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
@@ -23,6 +20,7 @@ public class AdminService {
     private final EventMapper eventMapper;
     private final Validation validation;
     private final CategoryRepository categoryRepository;
+    private final EventService eventService;
 
 
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
@@ -35,18 +33,18 @@ public class AdminService {
         }
 
         validation.publicEventValidation(request, event);
+
         Category category = (request.category() != null)
                 ? categoryRepository.findById(request.category())
                 .orElseThrow(() -> new NotFoundException("Категория не найдена"))
                 : event.getCategory();
 
-        eventMapper.updateEventAdmin(request, event, category);
+        event.setCategory(category);
+        event.setConfirmedRequests(eventService.getConfirmedRequests(eventId));
 
-
+        eventMapper.updateEventAdmin(request, event);
 
         Event result = eventRepository.save(event);
-        System.out.println("!!! " + result);
-        System.out.println("zxc");
 
         System.out.println(result);
         System.out.println(eventMapper.toEventFullDto(result));

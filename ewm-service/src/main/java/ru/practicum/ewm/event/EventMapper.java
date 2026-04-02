@@ -87,9 +87,7 @@ public class EventMapper {
         if (dto.title() != null) event.setTitle(dto.title());
     }
 
-    public void updateEventUser(UpdateEventUserRequest dto, Event event, Category category) {
-
-        event.setCategory(category);
+    public void updateEventUser(UpdateEventUserRequest dto, Event event) {
 
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
         if (dto.description() != null) event.setDescription(dto.description());
@@ -119,9 +117,7 @@ public class EventMapper {
         return new LocationDto(location.getLat(), location.getLon());
     }
 
-    public void updateEventAdmin(UpdateEventAdminRequest dto, Event event, Category category) {
-
-        event.setCategory(category);
+    public void updateEventAdmin(UpdateEventAdminRequest dto, Event event) {
 
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
         if (dto.description() != null) event.setDescription(dto.description());
