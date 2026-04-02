@@ -35,7 +35,7 @@ public class UserService {
                     .map(userMapper::toUserDto)
                     .toList();
         }
-            return userRepository.findAllByIdIn(ids, pageable);
-        }
+        return userRepository.findAllByIdIn(ids, pageable);
     }
+}
 

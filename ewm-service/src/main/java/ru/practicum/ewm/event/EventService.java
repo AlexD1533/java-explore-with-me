@@ -1,14 +1,12 @@
 package ru.practicum.ewm.event;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.Category;
-import ru.practicum.ewm.category.CategoryDto;
+
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
@@ -34,8 +32,8 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public EventFullDto create(Long userId, NewEventDto request) {
 
@@ -52,7 +50,6 @@ public class EventService {
 
     }
 
-
     public EventFullDto getEventByIdByUserId(Long userId, Long eventId) {
 
         Event targetEvent = eventRepository.findByIdAndInitiatorId(eventId, userId).orElseThrow(() ->
@@ -61,7 +58,6 @@ public class EventService {
     }
 
     public EventFullDto updateEvent(Long eventId, Long userId, UpdateEventUserRequest request) {
-
 
         Event event = eventRepository.findEventForUpdate(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
@@ -83,7 +79,7 @@ public class EventService {
 
     }
 
-    public List<EventShortDto> searchEventsByUserId(@NotNull Long userId, Integer from, Integer size) {
+    public List<EventShortDto> searchEventsByUserId(Long userId, Integer from, Integer size) {
 
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
         List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
@@ -106,8 +102,8 @@ public class EventService {
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 
-    public List<EventFullDto> searchEventsInfoByParmPulic(String text, List<Long> categories,
-                                                          Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> searchEventsInfoByParmPublic(String text, List<Long> categories,
+                                                           Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
 
         LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
@@ -130,7 +126,6 @@ public class EventService {
 
     public Long getConfirmedRequests(Long eventId) {
         return participationRepository.countConfirmedRequests(eventId);
-
     }
 
 }

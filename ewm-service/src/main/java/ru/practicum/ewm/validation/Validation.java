@@ -1,11 +1,11 @@
 package ru.practicum.ewm.validation;
 
-import jakarta.validation.constraints.NotNull;
+
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
-import ru.practicum.ewm.event.EventService;
+
 import ru.practicum.ewm.event.EventState;
-import ru.practicum.ewm.event.dto.EventFullDto;
+
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.DuplicatedDataException;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
-import ru.practicum.ewm.practicipation.ParticipationService;
+
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
@@ -139,7 +139,6 @@ public class Validation {
         }
     }
 
-
     public void publicEventValidation(UpdateEventAdminRequest request, Event event) {
 
         if (event.getState().equals(EventState.PUBLISHED) && request.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
@@ -152,7 +151,7 @@ public class Validation {
         if (event.getState().equals(EventState.CANCELED) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
             throw new ConflictException("событие можно отклонить, только если оно еще не опубликовано");
         }
-         if (event.getState().equals(EventState.PUBLISHED) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
+        if (event.getState().equals(EventState.PUBLISHED) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
             throw new ConflictException("событие можно отклонить, только если оно еще не опубликовано");
         }
     }

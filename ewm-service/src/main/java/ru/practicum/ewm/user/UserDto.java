@@ -1,4 +1,5 @@
 package ru.practicum.ewm.user;
+
 import jakarta.validation.constraints.*;
 
 public record UserDto(
@@ -12,4 +13,5 @@ public record UserDto(
         @Email
         @Size(min = 6, max = 254)
         String email
-) {}
+) {
+}

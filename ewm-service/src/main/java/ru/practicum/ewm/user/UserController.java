@@ -1,6 +1,5 @@
 package ru.practicum.ewm.user;
 
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
@@ -31,9 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final EventRepository eventRepository;
     private final Validation validation;
-    private final UserRepository userRepository;
     private final EventService eventService;
     private final ParticipationService participationService;
 
@@ -145,7 +141,6 @@ public class UserController {
     }
 
 
-
     @PatchMapping("/{userId}/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequests(
@@ -174,7 +169,6 @@ public class UserController {
         log.info("Заявка отменена {} ", result);
         return result;
     }
-
 
 
 }

@@ -6,4 +6,5 @@ public record EventRequestStatusUpdateRequest(
         List<Long> requestIds,
 
         RequestStatus status
-) {}
+) {
+}

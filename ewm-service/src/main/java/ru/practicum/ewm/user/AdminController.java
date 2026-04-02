@@ -60,7 +60,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") Integer size
 
     ) {
-        System.out.println(ids + " " +  from+ " " + size);
+        System.out.println(ids + " " + from + " " + size);
         log.info("Пользователь: запрос на получение информации");
 
         List<UserDto> users = userService.searchUsersInfo(ids, from, size);
@@ -75,7 +75,7 @@ public class AdminController {
         log.info("Категория: запрос на создание {}", request);
         validation.categoryNameValidation(request.name());
 
-        CategoryDto createdCategory= categoryService.create(request);
+        CategoryDto createdCategory = categoryService.create(request);
         log.info("Пользователь создан с id={}", createdCategory.id());
         return createdCategory;
     }
@@ -92,7 +92,6 @@ public class AdminController {
         log.info("Категория обновлена с id={}", updatedCategory.id());
         return updatedCategory;
     }
-
 
 
     @PatchMapping("/events/{eventId}")

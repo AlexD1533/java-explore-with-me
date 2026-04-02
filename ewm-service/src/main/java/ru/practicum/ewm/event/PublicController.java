@@ -6,11 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.category.CategoryService;
 import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.user.AdminService;
-import ru.practicum.ewm.user.UserService;
-import ru.practicum.ewm.validation.Validation;
+
 
 import java.util.List;
 
@@ -21,10 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublicController {
 
-    private final Validation validation;
-    private final UserService userService;
-    private final CategoryService categoryService;
-    private final AdminService adminService;
     private final EventService eventService;
 
     @GetMapping
@@ -40,7 +33,7 @@ public class PublicController {
     ) {
         log.info("События: запрос на получение информации");
 
-        List<EventFullDto> events = eventService.searchEventsInfoByParmPulic(text, categories, paid, rangeStart, rangeEnd, from, size);
+        List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size);
         log.info("Результат поиска: {}", events);
         return events;
     }
@@ -55,7 +48,6 @@ public class PublicController {
         log.info("Результат поиска: {}", event);
         return event;
     }
-
 
 
 }

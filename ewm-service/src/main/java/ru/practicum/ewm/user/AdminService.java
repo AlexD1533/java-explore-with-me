@@ -7,8 +7,6 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
-import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.validation.Validation;
 

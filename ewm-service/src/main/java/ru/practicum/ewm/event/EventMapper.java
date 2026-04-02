@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.*;
 import ru.practicum.ewm.event.dto.*;
-import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
@@ -18,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
-    private final ParticipationRepository participationRepository;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Event toEvent(NewEventDto dto, Category category, User user) {
@@ -73,18 +72,6 @@ public class EventMapper {
                 event.getTitle(),
                 event.getViews()
         );
-    }
-
-    public void updateEventFromDto(UpdateEventAdminRequest dto, Event event) {
-        if (dto.annotation() != null) event.setAnnotation(dto.annotation());
-        if (dto.category() != null) event.setCategory(Category.builder().id(dto.category()).build());
-        if (dto.description() != null) event.setDescription(dto.description());
-        if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
-        if (dto.location() != null) event.setLocation(toLocation(dto.location()));  // исправлено
-        if (dto.paid() != null) event.setPaid(dto.paid());
-        if (dto.participantLimit() != null) event.setParticipantLimit(dto.participantLimit());
-        if (dto.requestModeration() != null) event.setRequestModeration(dto.requestModeration());
-        if (dto.title() != null) event.setTitle(dto.title());
     }
 
     public void updateEventUser(UpdateEventUserRequest dto, Event event) {

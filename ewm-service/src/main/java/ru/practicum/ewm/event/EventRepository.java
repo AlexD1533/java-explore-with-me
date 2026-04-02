@@ -1,6 +1,6 @@
 package ru.practicum.ewm.event;
 
-import jakarta.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,7 +37,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findEventForUpdate(Long eventId, Long userId);
 
 
-
     @Query("SELECT e FROM Event e " +
             "JOIN FETCH e.initiator " +
             "JOIN FETCH e.category " +
@@ -53,7 +52,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
-
 
 
     @Query("SELECT e FROM Event e " +

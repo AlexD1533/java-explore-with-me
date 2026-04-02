@@ -6,4 +6,5 @@ public record ParticipationRequestDto(
         Long id,
         Long requester,
         RequestStatus status
-) {}
+) {
+}

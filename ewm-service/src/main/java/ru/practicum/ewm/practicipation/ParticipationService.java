@@ -18,7 +18,6 @@ public class ParticipationService {
 
     private final ParticipationRepository participationRepository;
     private final RequestParticipationMapper requestParticipationMapper;
-    private final EventService eventService;
     private final Validation validation;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
