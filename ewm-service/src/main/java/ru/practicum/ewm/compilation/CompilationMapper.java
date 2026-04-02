@@ -1,39 +1,77 @@
 package ru.practicum.ewm.compilation;
 
-import ru.practicum.ewm.event.dto.EventShortDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.ewm.event.Event;
-import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.ewm.event.EventMapper;
+import ru.practicum.ewm.event.dto.EventShortDto;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring",
-        uses = {EventMapper.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-public abstract class CompilationMapper {
+@Component
+@RequiredArgsConstructor
+public class CompilationMapper {
 
-    @Autowired
-    protected EventMapper eventMapper;
+    private final EventMapper eventMapper;
 
-    @Mapping(target = "events", expression = "java(mapEventIdsToEvents(dto.events()))")
-    @Mapping(target = "id", ignore = true)
-    public abstract Compilation toCompilation(NewCompilationDto dto);
+    public Compilation toCompilation(NewCompilationDto dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    @Mapping(target = "events", expression = "java(mapEventsToShortDtos(compilation.getEvents()))")
-    public abstract CompilationDto toCompilationDto(Compilation compilation);
+        return Compilation.builder()
+                .events(mapIdsToEvents(dto.events()))
+                .pinned(dto.pinned())
+                .title(dto.title())
+                .build();
+    }
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "events", expression = "java(dto.events() != null ? mapEventIdsToEvents(dto.events()) : compilation.getEvents())")
-    public abstract void updateCompilationFromDto(UpdateCompilationRequest dto, @MappingTarget Compilation compilation);
+    public CompilationDto toCompilationDto(Compilation compilation) {
+        if (compilation == null) {
+            return null;
+        }
 
-    protected Set<Event> mapEventIdsToEvents(Set<Long> eventIds) {
-        if (eventIds == null) return null;
+        return new CompilationDto(
+                compilation.getId(),
+                compilation.getPinned(),
+                compilation.getTitle(),
+                mapEventsToShortDtos(compilation.getEvents())
+        );
+    }
+
+    public void updateCompilationFromDto(UpdateCompilationRequest dto, Compilation compilation) {
+        if (dto == null || compilation == null) {
+            return;
+        }
+
+        if (dto.title() != null) {
+            compilation.setTitle(dto.title());
+        }
+        if (dto.pinned() != null) {
+            compilation.setPinned(dto.pinned());
+        }
+        if (dto.events() != null) {
+            compilation.setEvents(mapIdsToEvents(dto.events()));
+        }
+    }
+
+    private Set<Event> mapIdsToEvents(Set<Long> eventIds) {
+        if (eventIds == null) {
+            return null;
+        }
         return eventIds.stream()
                 .map(id -> Event.builder().id(id).build())
                 .collect(Collectors.toSet());
     }
 
-    protected abstract Set<EventShortDto> mapEventsToShortDtos(Set<Event> events);
+    private Set<EventShortDto> mapEventsToShortDtos(Set<Event> events) {
+        if (events == null) {
+            return Collections.emptySet();
+        }
+        return events.stream()
+                .map(eventMapper::toEventShortDto)
+                .collect(Collectors.toSet());
+    }
 }
