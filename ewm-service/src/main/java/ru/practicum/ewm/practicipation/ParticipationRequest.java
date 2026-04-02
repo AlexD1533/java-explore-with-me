@@ -2,6 +2,7 @@ package ru.practicum.ewm.practicipation;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.user.User;
 
@@ -19,6 +20,7 @@ public class ParticipationRequest {
     private Long id;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)

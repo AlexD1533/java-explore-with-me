@@ -2,6 +2,8 @@ package ru.practicum.ewm.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.category.Category;
+import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventMapper;
 import ru.practicum.ewm.event.EventRepository;
@@ -20,6 +22,7 @@ public class AdminService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final Validation validation;
+    private final CategoryRepository categoryRepository;
 
 
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
@@ -32,7 +35,12 @@ public class AdminService {
         }
 
         validation.publicEventValidation(request, event);
-        eventMapper.updateEventAdmin(request, event);
+        Category category = (request.category() != null)
+                ? categoryRepository.findById(request.category())
+                .orElseThrow(() -> new NotFoundException("Категория не найдена"))
+                : event.getCategory();
+
+        eventMapper.updateEventAdmin(request, event, category);
 
 
 

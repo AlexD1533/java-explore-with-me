@@ -146,7 +146,7 @@ public class UserController {
 
 
 
-    @PatchMapping("/{userId}/requests")
+    @PatchMapping("/{userId}/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequests(
             @RequestBody(required = false) EventRequestStatusUpdateRequest request,
@@ -154,8 +154,6 @@ public class UserController {
             @PathVariable Long eventId
     ) {
         log.info("Заявки: запрос на обновление статусов {}", request);
-
-        validation.userIdValidation(userId);
 
         EventRequestStatusUpdateResult result = participationService.updateRequests(eventId, userId, request);
         log.info("Статусы заявок обновлены");
@@ -172,10 +170,11 @@ public class UserController {
         log.info("Заявки: запрос на отмену заявки {}", requestId);
         validation.userIdValidation(userId);
 
-        ParticipationRequestDto result = participationService.cancelRequestsByUser(userId, requestId);
+        ParticipationRequestDto result = participationService.cancelRequestsByUser(requestId, userId);
         log.info("Заявка отменена {} ", result);
         return result;
     }
+
 
 
 }

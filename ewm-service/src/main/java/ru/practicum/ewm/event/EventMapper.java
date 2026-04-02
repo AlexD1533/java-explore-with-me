@@ -18,27 +18,14 @@ import java.time.format.DateTimeFormatter;
 public class EventMapper {
     private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public Event toEvent(NewEventDto dto, Long userId) {
-
-        Category category = new Category();
-        if (dto.category() != null) {
-           category = categoryRepository.findById(dto.category())
-                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
-        }
-
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("Пользователя с id: "+ "не существует"));;
+    public Event toEvent(NewEventDto dto, Category category, User user) {
 
 
         return Event.builder()
                 .annotation(dto.annotation())
-
-
                 .category(category)
                 .description(dto.description())
                 .eventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER))
@@ -54,13 +41,10 @@ public class EventMapper {
 
     public EventFullDto toEventFullDto(Event event) {
 
-        Long confirmedRequests = participationRepository.countConfirmedRequests(event.getId());
-
-
         return new EventFullDto(
                 event.getAnnotation(),
                 categoryMapper.toCategoryDto(event.getCategory()),
-                confirmedRequests,
+                event.getConfirmedRequests(),
                 event.getCreatedOn() != null ? event.getCreatedOn().format(FORMATTER) : null,
                 event.getDescription(),
                 event.getEventDate().format(FORMATTER),
@@ -103,14 +87,9 @@ public class EventMapper {
         if (dto.title() != null) event.setTitle(dto.title());
     }
 
-    public void updateEventUser(UpdateEventUserRequest dto, Event event) {
+    public void updateEventUser(UpdateEventUserRequest dto, Event event, Category category) {
 
-
-        if (dto.category() != null) {
-            Category category = categoryRepository.findById(dto.category())
-                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
-            event.setCategory(category);
-        }
+        event.setCategory(category);
 
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
         if (dto.description() != null) event.setDescription(dto.description());
@@ -140,15 +119,10 @@ public class EventMapper {
         return new LocationDto(location.getLat(), location.getLon());
     }
 
-    public void updateEventAdmin(UpdateEventAdminRequest dto, Event event) {
+    public void updateEventAdmin(UpdateEventAdminRequest dto, Event event, Category category) {
 
+        event.setCategory(category);
 
-
-        if (dto.category() != null) {
-            Category category = categoryRepository.findById(dto.category())
-                    .orElseThrow(() -> new NotFoundException("Категории не существует"));
-            event.setCategory(category);
-        }
         if (dto.annotation() != null) event.setAnnotation(dto.annotation());
         if (dto.description() != null) event.setDescription(dto.description());
         if (dto.eventDate() != null) event.setEventDate(LocalDateTime.parse(dto.eventDate(), FORMATTER));
@@ -163,6 +137,6 @@ public class EventMapper {
                 event.setState(EventState.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             }
-}
+        }
     }
 }

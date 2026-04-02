@@ -16,13 +16,16 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
     List<ParticipationRequest> findAllByEventIdAndRequesterId(Long eventId, Long userId);
 
 
-    @Query("SELECT p.id AS id, p.status AS status, e.requestModeration, e.participantLimit AS participantLimit " +
-            "FROM ParticipationRequest AS p " +
-            "JOIN p.event AS e " +
-            "WHERE e.initiator.id = :userId AND e.id = :eventId " +
-            "AND (p.id IN :ids) " +
-            "AND (p.status = 'PENDING')")
-    List<ViewRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
+    @Query("SELECT p FROM ParticipationRequest p " +
+            "JOIN FETCH p.event e " +
+            "JOIN FETCH e.location " +
+            "JOIN FETCH e.category " +
+            "JOIN FETCH e.initiator " +
+            "WHERE e.initiator.id = :userId " +
+            "AND e.id = :eventId " +
+            "AND p.id IN :ids " +
+            "AND p.status = 'PENDING'")
+    List<ParticipationRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
                                               @Param("eventId") Long eventId,
                                               @Param("userId") Long userId);
 
@@ -45,4 +48,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "WHERE e.id = :eventId AND i.id = :userId")
     List<ParticipationRequest> findAllByEventIdAndInitiatorId(@Param("eventId") Long eventId,
                                                               @Param("userId") Long userId);
+
+    Optional<ParticipationRequest> findByIdAndRequesterId(Long requestId, Long userId);
 }

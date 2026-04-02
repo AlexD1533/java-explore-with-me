@@ -5,11 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class ParticipationService {
     private final RequestParticipationMapper requestParticipationMapper;
     private final EventService eventService;
     private final Validation validation;
-    private final EventMapper eventMapper;
+    private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
     public List<ParticipationRequestDto> getParticipationByUserIdAndEventId(Long userId, Long eventId) {
@@ -35,21 +36,20 @@ public class ParticipationService {
 
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();
+User requester = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        System.out.println("qqq" + eventId + " " +  userId + " " + request );
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
+        System.out.println(" www " + event);
 
-        List<ViewRequest> targetRequest = participationRepository.findAllForUpdateByParam(request.requestIds(), eventId, userId);
-        List<ParticipationRequest> requests = targetRequest.stream()
-                .map(dto -> ParticipationRequest.builder()
-                        .id(dto.getId())
-                        .status(dto.getStatus())
-                        .build())
-                .toList();
+        List<ParticipationRequest> requests = participationRepository.findAllForUpdateByParam(request.requestIds(), eventId, userId);
 
+        System.out.println(" eee " + requests);
 
-        if (request.status().equals("CONFIRMED")) {
+        if (request.status() == RequestStatus.CONFIRMED) {
             requests.forEach(r -> {
                 if (!event.getRequestModeration() || event.getParticipantLimit() != result.getConfirmedRequests().size()) {
                     r.setStatus(RequestStatus.CONFIRMED);
@@ -62,7 +62,7 @@ public class ParticipationService {
                 }
             });
 
-        } else if (request.status().equals("REJECTED")) {
+        } else if (request.status() == RequestStatus.REJECTED) {
             requests.forEach(r -> {
 
                 r.setStatus(RequestStatus.REJECTED);
@@ -71,7 +71,12 @@ public class ParticipationService {
             });
         }
 
+
+        System.out.println(" rrr" + updateRequests);
         participationRepository.saveAll(updateRequests);
+
+        System.out.println(" ttt" + result);
+
 
         return result;
     }
@@ -107,10 +112,12 @@ public class ParticipationService {
 
     }
 
-    public ParticipationRequestDto cancelRequestsByUser(Long eventId, Long userId) {
+    public ParticipationRequestDto cancelRequestsByUser(Long requestId, Long userId) {
 
-        ParticipationRequest request = participationRepository.findByEventIdAndRequesterId(eventId, userId).orElseThrow(() ->
+        ParticipationRequest request = participationRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() ->
                 new NotFoundException("Такой заявки не существует"));
+
+        System.out.println("eee" + request);
 
         request.setStatus(RequestStatus.CANCELED);
         participationRepository.save(request);
