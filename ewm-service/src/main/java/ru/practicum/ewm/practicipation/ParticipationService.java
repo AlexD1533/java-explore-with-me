@@ -23,18 +23,18 @@ public class ParticipationService {
     private final EventRepository eventRepository;
 
     public List<ParticipationRequestDto> getParticipationByUserIdAndEventId(Long userId, Long eventId) {
-        List<ParticipationRequest> participationRequests = participationRepository.findAllByEventIdAndRequesterId(eventId, userId);
+
+        List<ParticipationRequest> participationRequests = participationRepository.findAllByEventIdAndInitiatorId(eventId, userId);
+
+        System.out.println("!!! "+  participationRequests);
         return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
 
     }
 
     public EventRequestStatusUpdateResult updateRequests(Long eventId, Long userId, EventRequestStatusUpdateRequest request) {
 
-
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
-
         List<ParticipationRequest> updateRequests = new ArrayList<>();
-
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
@@ -90,6 +90,9 @@ public class ParticipationService {
         System.out.println("mmm");
 
         ParticipationRequest createdRequest = requestParticipationMapper.toParticipationRequest(event, userId);
+
+        System.out.println("aaa " + createdRequest);
+
 
         if (!event.getRequestModeration()) createdRequest.setStatus(RequestStatus.CONFIRMED);
 

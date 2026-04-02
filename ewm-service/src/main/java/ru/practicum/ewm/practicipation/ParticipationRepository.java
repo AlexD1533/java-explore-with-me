@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public interface ParticipationRepository extends JpaRepository<ParticipationRequest, Long> {
 
@@ -20,20 +21,28 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "JOIN p.event AS e " +
             "WHERE e.initiator.id = :userId AND e.id = :eventId " +
             "AND (p.id IN :ids) " +
-            "AND (p.status = 'PENDING')" )
+            "AND (p.status = 'PENDING')")
     List<ViewRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
                                               @Param("eventId") Long eventId,
                                               @Param("userId") Long userId);
 
-@Query("SELECT COUNT(r) FROM ParticipationRequest AS r " +
-        "JOIN r.event AS e " +
-        "WHERE e.id = :eventId AND (r.status = 'CONFIRMED' OR r.status = 'PENDING')")
-    Long countConfirmedRequests(@Param("eventId")Long eventId);
+    @Query("SELECT COUNT(r) FROM ParticipationRequest AS r " +
+            "JOIN r.event AS e " +
+            "WHERE e.id = :eventId AND (r.status = 'CONFIRMED' OR r.status = 'PENDING')")
+    Long countConfirmedRequests(@Param("eventId") Long eventId);
 
 
     Integer countByEventId(Long eventId);
 
-    List<ParticipationRequest> findAllByRequesterId(@NotNull Long userId);
+    List<ParticipationRequest> findAllByRequesterId(Long userId);
 
     Optional<ParticipationRequest> findByEventIdAndRequesterId(Long eventId, Long userId);
+
+
+    @Query("SELECT r FROM ParticipationRequest r " +
+            "JOIN r.event AS e " +
+            "JOIN e.initiator AS i " +
+            "WHERE e.id = :eventId AND i.id = :userId")
+    List<ParticipationRequest> findAllByEventIdAndInitiatorId(@Param("eventId") Long eventId,
+                                                              @Param("userId") Long userId);
 }

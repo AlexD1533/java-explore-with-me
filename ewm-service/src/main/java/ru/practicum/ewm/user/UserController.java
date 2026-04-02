@@ -58,11 +58,13 @@ public class UserController {
             @NotNull @PathVariable Long userId,
             @NotNull @Positive @RequestParam Long eventId) {
         log.info("Запрос: запрос на участие");
-        System.out.println("xxx");
+
         validation.userIdValidation(userId);
 
-        System.out.println("zzz");
+
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
+
+        System.out.println("ccc " + createdRequest);
         log.info("Запрос создан с id={}", createdRequest.id());
         return createdRequest;
     }

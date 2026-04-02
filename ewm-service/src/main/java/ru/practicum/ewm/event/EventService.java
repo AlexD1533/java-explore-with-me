@@ -73,15 +73,32 @@ public class EventService {
 
         Pageable pageable = PageRequest.of(from / size, size);
 
-    /*    List<EventState> statesEnums = stats.stream()
-                .map(EventState::valueOf)
-                .toList();*/
-
-
-        System.out.println("stat!!! " + states);
         List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
                 start, end, pageable);
 
         return events.stream().map(eventMapper::toEventFullDto).toList();
+    }
+
+    public List<EventFullDto> searchEventsInfoByParmPulic(String text, List<Long> categories,
+                                                          Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+
+        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
+        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+
+        List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
+                start, end, pageable);
+
+        return events.stream().map(eventMapper::toEventFullDto).toList();
+    }
+
+    public EventFullDto getEventByIdPublic(Long eventId) {
+        Event targetEvent = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED).orElseThrow(() ->
+                new NotFoundException("Событие не найдено"));
+
+
+        return eventMapper.toEventFullDto(targetEvent);
     }
 }

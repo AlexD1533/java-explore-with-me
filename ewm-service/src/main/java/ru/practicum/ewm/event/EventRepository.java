@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,4 +44,26 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
+
+
+
+    @Query("SELECT e FROM Event e " +
+            "JOIN FETCH e.category " +
+            "WHERE e.state = 'PUBLISHED' " +
+            "AND (:paid IS NULL OR e.paid = :paid) " +
+            "AND (:text IS NULL OR " +
+            "(LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) OR " +
+            "LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%')))) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "AND (CAST(:rangeStart AS timestamp) IS NULL OR e.eventDate > :rangeStart) " +
+            "AND (CAST(:rangeEnd AS timestamp) IS NULL OR e.eventDate < :rangeEnd)")
+    List<Event> findAllEventsByParamPublic(
+            @Param("text") String text,
+            @Param("categories") List<Long> categories,
+            @Param("paid") Boolean paid,
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd,
+            Pageable pageable);
+
+    Optional<Event> findByIdAndState(Long eventId, EventState state);
 }

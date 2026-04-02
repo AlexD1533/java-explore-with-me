@@ -120,7 +120,7 @@ public class AdminController {
 
     ) {
         log.info("События: запрос на получение информации");
-        System.out.println("rrr" + states);
+
         List<EventFullDto> events = eventService.searchEventsInfoByParm(users, states, categories, rangeStart, rangeEnd, from, size);
         log.info("Результат поиска: {}", events);
         return events;
