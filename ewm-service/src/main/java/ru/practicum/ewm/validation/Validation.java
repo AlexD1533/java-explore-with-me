@@ -139,18 +139,23 @@ public class Validation {
         }
     }
 
-    public boolean isPublicStateEvent(Event event) {
-        return event.getState().equals(EventState.PUBLISHED);
-    }
 
     public void publicEventValidation(UpdateEventAdminRequest request, Event event) {
 
-        if (isPublicStateEvent(event) && request.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
+        if (event.getState().equals(EventState.PUBLISHED) && request.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
+            throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания публикации");
+        }
+        if (event.getState().equals(EventState.CANCELED) && request.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
             throw new ConflictException("Cобытие можно публиковать, только если оно в состоянии ожидания публикации");
         }
 
-        if (!isPublicStateEvent(event) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
+        if (event.getState().equals(EventState.CANCELED) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
+            throw new ConflictException("событие можно отклонить, только если оно еще не опубликовано");
+        }
+         if (event.getState().equals(EventState.PUBLISHED) && request.stateAction().equals(StateActionAdmin.REJECT_EVENT)) {
             throw new ConflictException("событие можно отклонить, только если оно еще не опубликовано");
         }
     }
+
+
 }

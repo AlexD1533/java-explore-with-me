@@ -62,20 +62,26 @@ public class EventService {
         return events.stream().map(eventMapper::toEventShortDto).toList();
     }
 
-    public List<EventFullDto> searchEventsInfoByParm(List<Long> usersIds, List<String> stats,
+    public List<EventFullDto> searchEventsInfoByParm(List<Long> usersIds, List<String> states,
                                                      List<Long> categoryIds, String rangeStart,
                                                      String rangeEnd, Integer from, Integer size) {
 
-        System.out.println("qqq");
+
 
         LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
-        System.out.println("www");
+
         Pageable pageable = PageRequest.of(from / size, size);
 
-        List<Event> events = eventRepository.findAllEventsByParam(usersIds, stats, categoryIds,
+    /*    List<EventState> statesEnums = stats.stream()
+                .map(EventState::valueOf)
+                .toList();*/
+
+
+        System.out.println("stat!!! " + states);
+        List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
                 start, end, pageable);
-        System.out.println("eee");
+
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 }

@@ -54,11 +54,8 @@ public class EventMapper {
 
     public EventFullDto toEventFullDto(Event event) {
 
-        System.out.println("asd");
         Long confirmedRequests = participationRepository.countConfirmedRequests(event.getId());
 
-
-        System.out.println("wer");
 
         return new EventFullDto(
                 event.getAnnotation(),
@@ -162,7 +159,10 @@ public class EventMapper {
         if (dto.title() != null) event.setTitle(dto.title());
         if (dto.stateAction() != null) {
             if (dto.stateAction().equals(StateActionAdmin.REJECT_EVENT)) event.setState(EventState.CANCELED);
-            if (dto.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) event.setState(EventState.PUBLISHED);
+            if (dto.stateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
 }
     }
 }

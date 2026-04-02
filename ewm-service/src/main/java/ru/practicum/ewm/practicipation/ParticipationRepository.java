@@ -1,9 +1,11 @@
 package ru.practicum.ewm.practicipation;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -30,4 +32,8 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
 
 
     Integer countByEventId(Long eventId);
+
+    List<ParticipationRequest> findAllByRequesterId(@NotNull Long userId);
+
+    Optional<ParticipationRequest> findByEventIdAndRequesterId(Long eventId, Long userId);
 }

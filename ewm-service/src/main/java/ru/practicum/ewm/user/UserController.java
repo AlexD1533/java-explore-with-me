@@ -131,8 +131,20 @@ public class UserController {
         return participations;
     }
 
+    @GetMapping("/{userId}/requests")
+    public List<ParticipationRequestDto> getParticipationIdByUserId(
+            @NotNull @PathVariable Long userId) {
+        log.info("Запрос на участие: запрос на получение информации");
+        validation.userIdValidation(userId);
+        List<ParticipationRequestDto> participations = participationService.getParticipationByUserId(userId);
+        log.info("Запросы на участие с id:{}", participations);
+        return participations;
 
-    @PatchMapping("/{userId}/events/{eventId}/requests")
+    }
+
+
+
+    @PatchMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequests(
             @RequestBody(required = false) EventRequestStatusUpdateRequest request,
@@ -145,6 +157,21 @@ public class UserController {
 
         EventRequestStatusUpdateResult result = participationService.updateRequests(eventId, userId, request);
         log.info("Статусы заявок обновлены");
+        return result;
+    }
+
+
+    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    public ParticipationRequestDto cancelRequestsByUser(
+            @PathVariable Long userId,
+            @PathVariable Long requestId
+    ) {
+        log.info("Заявки: запрос на отмену заявки {}", requestId);
+        validation.userIdValidation(userId);
+
+        ParticipationRequestDto result = participationService.cancelRequestsByUser(userId, requestId);
+        log.info("Заявка отменена {} ", result);
         return result;
     }
 

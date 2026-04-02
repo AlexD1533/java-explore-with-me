@@ -110,9 +110,9 @@ public class AdminController {
 
     @GetMapping("/events")
     public List<EventFullDto> getEventsByParamAdmin(
-            @RequestParam(required = false) List<Long> usersIds,
-            @RequestParam(required = false) List<String> stats,
-            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<String> states,
+            @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) String rangeStart,
             @RequestParam(required = false) String rangeEnd,
             @RequestParam(defaultValue = "0") Integer from,
@@ -120,8 +120,8 @@ public class AdminController {
 
     ) {
         log.info("События: запрос на получение информации");
-        System.out.println("rrr");
-        List<EventFullDto> events = eventService.searchEventsInfoByParm(usersIds, stats, categoryIds, rangeStart, rangeEnd, from, size);
+        System.out.println("rrr" + states);
+        List<EventFullDto> events = eventService.searchEventsInfoByParm(users, states, categories, rangeStart, rangeEnd, from, size);
         log.info("Результат поиска: {}", events);
         return events;
     }

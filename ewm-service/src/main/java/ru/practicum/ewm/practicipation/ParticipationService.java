@@ -1,5 +1,6 @@
 package ru.practicum.ewm.practicipation;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.*;
@@ -22,26 +23,21 @@ public class ParticipationService {
     private final EventRepository eventRepository;
 
     public List<ParticipationRequestDto> getParticipationByUserIdAndEventId(Long userId, Long eventId) {
-        List<ParticipationRequest> participationRequest = participationRepository.findAllByEventIdAndRequesterId(eventId, userId);
-        return participationRequest.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
+        List<ParticipationRequest> participationRequests = participationRepository.findAllByEventIdAndRequesterId(eventId, userId);
+        return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
 
     }
 
     public EventRequestStatusUpdateResult updateRequests(Long eventId, Long userId, EventRequestStatusUpdateRequest request) {
 
-        System.out.println("rrr");
+
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
-        System.out.println("bbb");
 
         List<ParticipationRequest> updateRequests = new ArrayList<>();
-        System.out.println("nnn");
-
 
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
-
-        System.out.println("mmm");
 
 
         List<ViewRequest> targetRequest = participationRepository.findAllForUpdateByParam(request.requestIds(), eventId, userId);
@@ -100,5 +96,23 @@ public class ParticipationService {
         return requestParticipationMapper.toParticipationRequestDto(participationRepository.save(createdRequest));
 
 
+    }
+
+    public List<ParticipationRequestDto> getParticipationByUserId(@NotNull Long userId) {
+        List<ParticipationRequest> participationRequests = participationRepository.findAllByRequesterId(userId);
+        return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
+
+    }
+
+    public ParticipationRequestDto cancelRequestsByUser(Long eventId, Long userId) {
+
+        ParticipationRequest request = participationRepository.findByEventIdAndRequesterId(eventId, userId).orElseThrow(() ->
+                new NotFoundException("Такой заявки не существует"));
+
+        request.setStatus(RequestStatus.CANCELED);
+        participationRepository.save(request);
+        ParticipationRequestDto dto = requestParticipationMapper.toParticipationRequestDto(request);
+
+        return requestParticipationMapper.toParticipationRequestDto(request);
     }
 }

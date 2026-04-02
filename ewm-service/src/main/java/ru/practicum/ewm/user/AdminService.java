@@ -26,21 +26,18 @@ public class AdminService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
-        System.out.println("time! " + request.eventDate());
 
         if (request.eventDate() != null && event.getPublishedOn() != null) {
             validation.validateEventDateAdminUpdate(request.eventDate(), event.getPublishedOn());
         }
 
-        System.out.println("asdf");
         validation.publicEventValidation(request, event);
-        System.out.println("qwe");
         eventMapper.updateEventAdmin(request, event);
-        System.out.println(event);
+
 
 
         Event result = eventRepository.save(event);
-
+        System.out.println("!!! " + result);
         System.out.println("zxc");
 
         System.out.println(result);
