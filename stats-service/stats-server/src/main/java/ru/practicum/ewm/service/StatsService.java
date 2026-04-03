@@ -28,16 +28,21 @@ public class StatsService {
     public List<ViewStatsDto> getVisitInfo(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
         List<ViewStats> stats;
-        if (unique) {
-            stats = statsRepository.getVisitsStatisticDistinct(start, end, uris);
-        } else {
-            stats = statsRepository.getVisitsStatistic(start, end, uris);
+        try {
+            if (unique) {
+                stats = statsRepository.getVisitsStatisticDistinct(start, end, uris);
+            } else {
+                stats = statsRepository.getVisitsStatistic(start, end, uris);
+            }
+
+            return stats.stream()
+                    .map(view -> new ViewStatsDto(view.getApp(), view.getUri(), view.getHits()))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            // Если сервис статистики упал, возвращаем пустой список, чтобы Main не сломался
+            return List.of();
+
         }
-
-        return stats.stream()
-                .map(view -> new ViewStatsDto(view.getApp(), view.getUri(), view.getHits()))
-                .collect(Collectors.toList());
     }
-
 }
-
