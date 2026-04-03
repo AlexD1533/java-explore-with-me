@@ -104,10 +104,16 @@ public class EventService {
 
     public List<EventFullDto> searchEventsInfoByParmPublic(String text, List<Long> categories,
                                                            Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+        LocalDateTime start;
+        LocalDateTime end;
 
-        LocalDateTime start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
-        LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
-
+        if (rangeStart == null && rangeEnd == null) {
+             start = LocalDateTime.now();
+             end = null;
+        } else {
+            start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
+            end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
+        }
         Pageable pageable = PageRequest.of(from / size, size);
 
 
