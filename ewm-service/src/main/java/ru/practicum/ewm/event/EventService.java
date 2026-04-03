@@ -1,5 +1,7 @@
 package ru.practicum.ewm.event;
 
+import dto.ViewStatsDto;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +19,11 @@ import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
+import ru.practicum.ewm.statistic.StatisticService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +36,10 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final ParticipationRepository participationRepository;
+
+    private final String serviceName = "ewm-main-service";
+    private final String nameByPath = "/event/";
+    private final StatisticService statisticService;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -103,29 +111,37 @@ public class EventService {
     }
 
     public List<EventFullDto> searchEventsInfoByParmPublic(String text, List<Long> categories,
-                                                           Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size) {
+                                                           Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size, HttpServletRequest request) {
         LocalDateTime start;
         LocalDateTime end;
 
         if (rangeStart == null && rangeEnd == null) {
-             start = LocalDateTime.now();
-             end = null;
+            start = LocalDateTime.now();
+            end = null;
         } else {
             start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
             end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
         }
         Pageable pageable = PageRequest.of(from / size, size);
-
-
         List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
                 start, end, pageable);
 
+        List<ViewStatsDto> stats = statisticService.getStatistic(null, null, List.of(request.getRequestURI()), null);
+        statisticService.sendHit(serviceName, request);
+
+        events.forEach(s -> {
+            s.setViews(statisticService.getViews(s.getId(), nameByPath, stats));
+        });
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 
-    public EventFullDto getEventByIdPublic(Long eventId) {
+    public EventFullDto getEventByIdPublic(Long eventId, HttpServletRequest request) {
         Event targetEvent = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
+
+        List<ViewStatsDto> stats = statisticService.getStatistic(null, null, List.of(request.getRequestURI()), null);
+        statisticService.sendHit(serviceName, request);
+        targetEvent.setViews(statisticService.getViews(targetEvent.getId(), nameByPath, stats));
 
         return eventMapper.toEventFullDto(targetEvent);
     }
@@ -133,5 +149,6 @@ public class EventService {
     public Long getConfirmedRequests(Long eventId) {
         return participationRepository.countConfirmedRequests(eventId);
     }
+
 
 }

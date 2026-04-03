@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -34,23 +35,25 @@ public class PublicController {
             @RequestParam(required = false) String rangeStart,
             @RequestParam(required = false) String rangeEnd,
             @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "10") Integer size,
+            HttpServletRequest request
 
     ) {
         log.info("События: запрос на получение информации");
 
-        List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size);
+        List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size, request);
         log.info("Результат поиска: {}", events);
         return events;
     }
 
     @GetMapping("/events/{eventId}")
     public EventFullDto getEventByIdPublic(
-            @NotNull @PathVariable Long eventId
+            @NotNull @PathVariable Long eventId,
+            HttpServletRequest request
     ) {
         log.info("Событие: запрос на получение информации");
 
-        EventFullDto event = eventService.getEventByIdPublic(eventId);
+        EventFullDto event = eventService.getEventByIdPublic(eventId, request);
         log.info("Результат поиска: {}", event);
         return event;
     }
