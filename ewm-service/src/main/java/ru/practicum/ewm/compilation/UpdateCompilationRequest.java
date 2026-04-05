@@ -9,4 +9,11 @@ public record UpdateCompilationRequest(
 
         @Size(min = 1, max = 50)
         String title
-) {}
+) {
+
+    public UpdateCompilationRequest {
+        if (events == null) {
+            events = Set.of();
+        }
+    }
+}

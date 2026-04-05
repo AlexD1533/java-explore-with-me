@@ -23,6 +23,7 @@ public record NewEventDto(
 
         Boolean paid,
 
+        @PositiveOrZero
         Integer participantLimit,
 
         Boolean requestModeration,

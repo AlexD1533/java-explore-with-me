@@ -29,7 +29,7 @@ public class UserService {
     public List<UserDto> searchUsersInfo(List<Integer> ids, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
 
-        if (ids.isEmpty()) {
+        if (ids == null || ids.isEmpty()) {
             List<User> users = userRepository.findAll(pageable).getContent();
             return users.stream()
                     .map(userMapper::toUserDto)

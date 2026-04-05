@@ -59,7 +59,7 @@ public class AdminController {
     @GetMapping("/users")
     public List<UserDto> getById(
             @RequestParam(required = false) List<Integer> ids,
-            @RequestParam(defaultValue = "0") Integer from, // По умолчанию 0
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size
 
     ) {
@@ -88,7 +88,7 @@ public class AdminController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(
             @PathVariable Long categoryId,
-            @RequestBody NewCategoryDto request) {
+           @Valid @RequestBody NewCategoryDto request) {
         log.info("Категория: запрос на обновление {}", request);
 
         CategoryDto updatedCategory = categoryService.update(categoryId, request);

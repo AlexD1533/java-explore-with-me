@@ -28,6 +28,9 @@ public class CompilationService {
         Set<Event> events = new HashSet<>(eventRepository.findAllById(request.events()));
 
         newCompilation.setEvents(events);
+        if (request.pinned() == null) {
+            newCompilation.setPinned(false);
+        }
         return compilationMapper.toCompilationDto(compilationRepository.save(newCompilation));
     }
 
@@ -51,9 +54,16 @@ public class CompilationService {
 
     public List<CompilationDto> searchCompilationInfoByParmPublic(Boolean pinned, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
+        List<Compilation> compilations;
+        if (pinned == null) {
+            compilations = compilationRepository.findAll(pageable).getContent();
+        } else {
 
-        List<Compilation> compilations = compilationRepository.findAllByPinned(pinned, pageable);
+            compilations = compilationRepository.findAllByPinned(pinned, pageable);
+        }
+
         return compilations.stream().map(compilationMapper::toCompilationDto).toList();
+
     }
 
     public CompilationDto getCompilationByIdPublic(Long compId) {
