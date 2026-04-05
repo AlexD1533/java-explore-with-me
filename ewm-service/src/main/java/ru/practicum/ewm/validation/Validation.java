@@ -118,7 +118,7 @@ public class Validation {
 
         Integer requestCount = participationRepository.countByEventId(event.getId());
 
-        if (event.getParticipantLimit() <= requestCount) {
+        if (event.getParticipantLimit() <= requestCount && event.getParticipantLimit() != 0 ) {
             throw new ConflictException(
                     "У события достигнут лимит запросов на участие");
         }
@@ -129,11 +129,11 @@ public class Validation {
             return;
         }
 
-        LocalDateTime eventDate = LocalDateTime.parse(s, FORMATTER);
+        LocalDateTime newDate = LocalDateTime.parse(s, FORMATTER);
         LocalDateTime minDate = publishedOnTime.plusHours(1);
 
 
-        if (eventDate.isBefore(minDate)) {
+        if (newDate.isBefore(minDate)) {
             throw new ValidationException(
                     "Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента"
             );
@@ -163,4 +163,30 @@ public class Validation {
             throw new ValidationException("Подборка не может не содержать событий");
         }
     }
-}
+
+    public void dataTimeValidation(String rangeStart, String rangeEnd) {
+        if (rangeStart == null || rangeEnd == null) {
+            return;
+        }
+        LocalDateTime start = LocalDateTime.parse(rangeStart, FORMATTER);
+        LocalDateTime end = LocalDateTime.parse(rangeEnd, FORMATTER);
+
+        if (end.isBefore(start)) {
+            throw new ValidationException("Дата начала не может быть позже даты конца");
+        }
+    }
+
+    public void timeFutureValidation(String s) {
+        if (s == null) return;
+        LocalDateTime newDate = LocalDateTime.parse(s, FORMATTER);
+
+        if (newDate.isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Новая дата не может быть в прошлом");
+        }
+
+
+
+    }
+
+    }
+

@@ -6,13 +6,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.CompilationDto;
 import ru.practicum.ewm.compilation.CompilationService;
 import ru.practicum.ewm.event.dto.EventFullDto;
-import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.validation.Validation;
 
 
 import java.util.List;
@@ -26,6 +25,7 @@ public class PublicController {
 
     private final EventService eventService;
     private final CompilationService compilationService;
+    private final Validation validation;
 
     @GetMapping("/events")
     public List<EventFullDto> getEventsByParamPublic(
@@ -40,6 +40,8 @@ public class PublicController {
 
     ) {
         log.info("События: запрос на получение информации");
+        validation.dataTimeValidation(rangeStart, rangeEnd);
+
 
         List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size, request);
         log.info("Результат поиска: {}", events);

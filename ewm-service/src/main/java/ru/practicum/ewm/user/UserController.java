@@ -52,7 +52,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequestEvent(
             @NotNull @PathVariable Long userId,
-            @NotNull @Positive @RequestParam Long eventId) {
+             @Positive @RequestParam Long eventId) {
         log.info("Запрос: запрос на участие");
 
         validation.userIdValidation(userId);

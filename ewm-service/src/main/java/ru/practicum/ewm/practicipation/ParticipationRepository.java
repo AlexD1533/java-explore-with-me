@@ -30,7 +30,7 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
 
     @Query("SELECT COUNT(r) FROM ParticipationRequest AS r " +
             "JOIN r.event AS e " +
-            "WHERE e.id = :eventId AND (r.status = 'CONFIRMED' OR r.status = 'PENDING')")
+            "WHERE e.id = :eventId AND (r.status = 'CONFIRMED')")
     Long countConfirmedRequests(@Param("eventId") Long eventId);
 
 
@@ -49,4 +49,10 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
                                                               @Param("userId") Long userId);
 
     Optional<ParticipationRequest> findByIdAndRequesterId(Long requestId, Long userId);
+
+    @Query("SELECT r FROM ParticipationRequest AS r " +
+            "JOIN r.event AS e " +
+            "WHERE :eventIds IS NULL OR e.id IN :eventIds " +
+            "AND (r.status = 'CONFIRMED')")
+    List<ParticipationRequest> findAllByEventIdsConfirmed(@Param("eventIds")List<Long> eventIds);
 }

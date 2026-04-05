@@ -104,6 +104,8 @@ public class AdminController {
             @Valid @RequestBody UpdateEventAdminRequest request) {
         log.info("Событие: запрос на обновление {}", request);
 
+        validation.timeFutureValidation(request.eventDate());
+
         EventFullDto updatedEvent = adminService.updateEventAdmin(eventId, request);
         log.info("Событие обновлено с id={}", updatedEvent.id());
         return updatedEvent;
@@ -124,6 +126,7 @@ public class AdminController {
         log.info("События: запрос на получение информации");
 
         List<EventFullDto> events = eventService.searchEventsInfoByParm(users, states, categories, rangeStart, rangeEnd, from, size);
+        validation.dataTimeValidation(rangeStart, rangeEnd);
         log.info("Результат поиска: {}", events);
         return events;
     }

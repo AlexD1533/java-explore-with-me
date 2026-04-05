@@ -30,4 +30,5 @@ public record NewEventDto(
         @NotBlank
         @Size(min = 3, max = 120)
         String title
-) {}
+) {
+}

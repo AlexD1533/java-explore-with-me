@@ -40,9 +40,13 @@ public class StatsClient {
         // Формируем параметры запроса
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+        String startPar = (start == null) ? "" : start.format(formatter);
+        String endPar = (end == null) ? "" : end.format(formatter);
+
+
         Map<String, Object> parameters = Map.of(
-                "start", start.format(formatter),
-                "end", end.format(formatter),
+                "start", startPar,
+                "end", endPar,
                 "uris", String.join(",", uris),
                 "unique", unique
         );

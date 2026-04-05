@@ -37,20 +37,23 @@ public class ParticipationService {
         List<ParticipationRequest> updateRequests = new ArrayList<>();
 User requester = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        System.out.println("qqq" + eventId + " " +  userId + " " + request );
-
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
-        System.out.println(" www " + event);
+
 
         List<ParticipationRequest> requests = participationRepository.findAllForUpdateByParam(request.requestIds(), eventId, userId);
 
-        System.out.println(" eee " + requests);
+
+        Integer confirmedRequests = Math.toIntExact(event.getConfirmedRequests());
 
         if (request.status() == RequestStatus.CONFIRMED) {
             requests.forEach(r -> {
-                if (!event.getRequestModeration() || event.getParticipantLimit() != result.getConfirmedRequests().size()) {
+                if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+                    r.setStatus(RequestStatus.CONFIRMED);
+                    updateRequests.add(r);
+                    result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
+                } else if (event.getParticipantLimit() > confirmedRequests) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
@@ -91,14 +94,11 @@ User requester = userRepository.findById(userId).orElseThrow(() -> new NotFoundE
         validation.noPublicEventValidation(event);
         validation.limitRequestsValidation(event);
 
-        System.out.println("mmm");
+
 
         ParticipationRequest createdRequest = requestParticipationMapper.toParticipationRequest(event, userId);
 
-        System.out.println("aaa " + createdRequest);
-
-
-        if (!event.getRequestModeration()) createdRequest.setStatus(RequestStatus.CONFIRMED);
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) createdRequest.setStatus(RequestStatus.CONFIRMED);
 
         return requestParticipationMapper.toParticipationRequestDto(participationRepository.save(createdRequest));
 

@@ -16,6 +16,8 @@ import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
+import ru.practicum.ewm.practicipation.ParticipationRequest;
+import ru.practicum.ewm.practicipation.ParticipationRequestDto;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
@@ -25,6 +27,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +111,8 @@ public class EventService {
         List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
                 start, end, pageable);
 
+        events = setConfirmedRequestsForList(events);
+
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 
@@ -122,16 +128,20 @@ public class EventService {
             start = (rangeStart != null) ? LocalDateTime.parse(rangeStart, formatter) : null;
             end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
         }
+
         Pageable pageable = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
                 start, end, pageable);
 
-        List<ViewStatsDto> stats = statisticService.getStatistic(null, null, List.of(request.getRequestURI()), null);
+        List<ViewStatsDto> stats = statisticService.getStatistic(start, end, List.of(request.getRequestURI()), false);
         statisticService.sendHit(serviceName, request);
 
         events.forEach(s -> {
-            s.setViews(statisticService.getViews(s.getId(), nameByPath, stats));
+            s.setViews(statisticService.getViews(s.getId(), request, stats));
         });
+
+        events = setConfirmedRequestsForList(events);
+
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 
@@ -139,10 +149,14 @@ public class EventService {
         Event targetEvent = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
 
-        List<ViewStatsDto> stats = statisticService.getStatistic(null, null, List.of(request.getRequestURI()), null);
+        List<ViewStatsDto> stats = statisticService.getStatistic(targetEvent.getCreatedOn(), LocalDateTime.now(), List.of(request.getRequestURI()), true);
         statisticService.sendHit(serviceName, request);
-        targetEvent.setViews(statisticService.getViews(targetEvent.getId(), nameByPath, stats));
 
+        targetEvent.setViews(statisticService.getViews(targetEvent.getId(), request, stats));
+        targetEvent.setConfirmedRequests(getConfirmedRequests(eventId));
+
+        eventRepository.save(targetEvent);
+        System.out.println("qqq " + targetEvent);
         return eventMapper.toEventFullDto(targetEvent);
     }
 
@@ -150,5 +164,22 @@ public class EventService {
         return participationRepository.countConfirmedRequests(eventId);
     }
 
+    public List<Event> setConfirmedRequestsForList(List<Event> events) {
+
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .toList();
+
+        List<ParticipationRequest> confirmedRequests = participationRepository.findAllByEventIdsConfirmed(eventIds);
+
+        events.forEach(e -> {
+            Long countRequests = confirmedRequests.stream()
+                    .filter(r -> Objects.equals(r.getEvent().getId(), e.getId()))
+                    .count();
+            e.setConfirmedRequests(countRequests);
+        });
+
+        return events;
+    }
 
 }

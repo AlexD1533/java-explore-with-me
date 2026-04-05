@@ -29,9 +29,9 @@ public class StatisticService {
         return statsClient.getStats(start, end, uris, unique);
     }
 
-    public Long getViews(Long eventId,String nameInPath, List<ViewStatsDto> stats) {
+    public Long getViews(Long eventId, HttpServletRequest request, List<ViewStatsDto> stats) {
         return stats.stream()
-                .filter(s -> s.uri().equals(nameInPath + eventId))
+                .filter(s -> s.uri().equals(request.getRequestURI()))
                 .map(ViewStatsDto::hits)
                 .findFirst()
                 .orElse(0L);
