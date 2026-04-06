@@ -13,10 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
-import ru.practicum.ewm.user.dto.practicipation.ParticipationRepository;
 
-import ru.practicum.ewm.user.dto.practicipation.ParticipationRequest;
-import ru.practicum.ewm.user.dto.practicipation.RequestStatus;
+import ru.practicum.ewm.practicipation.ParticipationRequest;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
@@ -25,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor

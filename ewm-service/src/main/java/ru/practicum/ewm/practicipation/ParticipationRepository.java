@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user.dto.practicipation;
+package ru.practicum.ewm.practicipation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,17 +23,14 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "WHERE e.initiator.id = :userId " +
             "AND e.id = :eventId " +
             "AND p.id IN :ids ")
-
     List<ParticipationRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
-                                              @Param("eventId") Long eventId,
-                                              @Param("userId") Long userId);
+                                                       @Param("eventId") Long eventId,
+                                                       @Param("userId") Long userId);
 
     @Query("SELECT COUNT(r) FROM ParticipationRequest AS r " +
             "JOIN r.event AS e " +
             "WHERE e.id = :eventId AND (r.status = 'CONFIRMED')")
     Long countConfirmedRequests(@Param("eventId") Long eventId);
-
-
 
 
     Integer countByEventId(Long eventId);
@@ -57,7 +54,7 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "JOIN r.event AS e " +
             "WHERE :eventIds IS NULL OR e.id IN :eventIds " +
             "AND (r.status = 'CONFIRMED')")
-    List<ParticipationRequest> findAllByEventIdsConfirmed(@Param("eventIds")List<Long> eventIds);
+    List<ParticipationRequest> findAllByEventIdsConfirmed(@Param("eventIds") List<Long> eventIds);
 
     Integer countByEventIdAndStatus(Long id, RequestStatus requestStatus);
 

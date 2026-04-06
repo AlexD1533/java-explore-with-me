@@ -1,6 +1,6 @@
-package ru.practicum.ewm.user.dto.practicipation.dto;
+package ru.practicum.ewm.practicipation.dto;
 
-import ru.practicum.ewm.user.dto.practicipation.RequestStatus;
+import ru.practicum.ewm.practicipation.RequestStatus;
 
 public record ParticipationRequestDto(
         String created,

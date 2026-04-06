@@ -1,14 +1,14 @@
-package ru.practicum.ewm.user.dto.practicipation;
+package ru.practicum.ewm.practicipation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.user.dto.practicipation.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.ewm.user.dto.practicipation.dto.EventRequestStatusUpdateResult;
-import ru.practicum.ewm.user.dto.practicipation.dto.ParticipationRequestDto;
-import ru.practicum.ewm.user.dto.practicipation.dto.RequestParticipationMapper;
+import ru.practicum.ewm.practicipation.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.practicipation.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.practicipation.dto.ParticipationRequestDto;
+import ru.practicum.ewm.practicipation.dto.RequestParticipationMapper;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.ArrayList;

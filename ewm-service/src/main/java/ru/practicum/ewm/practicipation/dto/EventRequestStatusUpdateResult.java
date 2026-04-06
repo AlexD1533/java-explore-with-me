@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user.dto.practicipation.dto;
+package ru.practicum.ewm.practicipation.dto;
 
 
 import lombok.Data;

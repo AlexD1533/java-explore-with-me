@@ -27,4 +27,5 @@ public record UpdateEventUserRequest(
 
         @Size(min = 3, max = 120)
         String title
-) {}
+) {
+}

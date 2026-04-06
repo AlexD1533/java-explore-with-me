@@ -8,4 +8,5 @@ public record ApiError(
         String reason,
         String status,
         String timestamp
-) {}
+) {
+}

@@ -15,7 +15,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.user.dto.practicipation.ParticipationRepository;
+import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
@@ -151,7 +151,6 @@ public class EventService {
         System.out.println("qqq " + targetEvent);
         return eventMapper.toEventFullDto(targetEvent);
     }
-
 
 
     public List<Event> setConfirmedRequestsForList(List<Event> events) {

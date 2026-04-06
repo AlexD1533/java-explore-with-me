@@ -14,10 +14,10 @@ import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
-import ru.practicum.ewm.user.dto.practicipation.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.ewm.user.dto.practicipation.dto.EventRequestStatusUpdateResult;
-import ru.practicum.ewm.user.dto.practicipation.dto.ParticipationRequestDto;
-import ru.practicum.ewm.user.dto.practicipation.ParticipationService;
+import ru.practicum.ewm.practicipation.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.practicipation.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.practicipation.dto.ParticipationRequestDto;
+import ru.practicum.ewm.practicipation.ParticipationService;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createRequestEvent(
             @NotNull @PathVariable Long userId,
-             @Positive @RequestParam Long eventId) {
+            @Positive @RequestParam Long eventId) {
         log.info("Запрос: запрос на участие");
         validation.userIdValidation(userId);
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);

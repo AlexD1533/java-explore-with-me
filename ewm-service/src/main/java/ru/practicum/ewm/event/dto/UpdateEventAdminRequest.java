@@ -27,4 +27,5 @@ public record UpdateEventAdminRequest(
 
         @Size(min = 3, max = 120)
         String title
-) {}
+) {
+}

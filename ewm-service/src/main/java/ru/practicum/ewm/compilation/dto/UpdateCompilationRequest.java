@@ -1,5 +1,7 @@
 package ru.practicum.ewm.compilation.dto;
+
 import jakarta.validation.constraints.*;
+
 import java.util.Set;
 
 public record UpdateCompilationRequest(
