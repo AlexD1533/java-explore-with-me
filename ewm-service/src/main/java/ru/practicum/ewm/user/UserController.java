@@ -60,7 +60,6 @@ public class UserController {
 
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
 
-        System.out.println("ccc " + createdRequest);
         log.info("Запрос создан с id={}", createdRequest.id());
         return createdRequest;
     }
@@ -150,7 +149,9 @@ public class UserController {
     ) {
         log.info("Заявки: запрос на обновление статусов {}", request);
 
+        validation.userIdValidation(userId);
         EventRequestStatusUpdateResult result = participationService.updateRequests(eventId, userId, request);
+
         log.info("Статусы заявок обновлены");
         return result;
     }

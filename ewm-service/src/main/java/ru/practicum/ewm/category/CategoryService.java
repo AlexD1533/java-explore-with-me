@@ -6,6 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.event.EventRepository;
+import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.DuplicatedDataException;
 import ru.practicum.ewm.exception.NotFoundException;
 
@@ -18,6 +20,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final EventRepository eventRepository;
 
     public CategoryDto create(NewCategoryDto request) {
 
@@ -30,8 +33,8 @@ public class CategoryService {
         Category newCategory = categoryRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Категория с id=" + id + " не найдена"));
 
-            return categoryMapper.toCategoryDto(newCategory);
-        }
+        return categoryMapper.toCategoryDto(newCategory);
+    }
 
     public List<CategoryDto> getCategoryAllByFilter(Integer from, Integer size) {
 
@@ -42,6 +45,14 @@ public class CategoryService {
     }
 
     public void delete(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() ->
+                new NotFoundException("Категория с id=" + categoryId + " не найдена"));
+
+        Long countEvents = eventRepository.countByCategoryName(category.getName());
+
+        if (countEvents != 0) {
+            throw new ConflictException("Категория имеет связанные события. Удаление невозможно");
+        }
         categoryRepository.deleteById(categoryId);
     }
 
@@ -49,6 +60,12 @@ public class CategoryService {
 
         Category category = categoryRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Категория с id=" + id + " не найдена"));
+
+        if (categoryRepository.existsByNameAndIdNot(request.name(), id)) {
+            throw new ConflictException("Категория с таким именем уже существует");
+        }
+
+
         categoryMapper.updateCategoryFromDto(request, category);
         return categoryMapper.toCategoryDto(categoryRepository.save(category));
     }

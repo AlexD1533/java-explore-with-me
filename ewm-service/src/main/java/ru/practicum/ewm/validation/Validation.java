@@ -1,6 +1,7 @@
 package ru.practicum.ewm.validation;
 
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
 
@@ -15,11 +16,13 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
 
+import ru.practicum.ewm.practicipation.RequestStatus;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Set;
 
 @Component
@@ -84,7 +87,7 @@ public class Validation {
 
     public void dublicateRequests(Long userId, Event event) {
 
-        if (!participationRepository.findAllByEventIdAndRequesterId(userId, event.getId()).isEmpty()) {
+        if (!participationRepository.findAllByEventIdAndRequesterId(event.getId(), userId).isEmpty()) {
             throw new ConflictException(
                     "Пользователь с id " + userId + "уже оставил заявку на участие в событие с id " + event.getId());
         }
@@ -114,11 +117,11 @@ public class Validation {
         }
     }
 
-    public void limitRequestsValidation(Event event) {
+    public void limitRequestsValidation(Event event, Integer requestCount) {
 
-        Integer requestCount = participationRepository.countByEventId(event.getId());
+        if (event.getParticipantLimit() <= requestCount && event.getParticipantLimit() != 0) {
+            System.out.println("aaa " + event.getParticipantLimit() + " " + requestCount);
 
-        if (event.getParticipantLimit() <= requestCount && event.getParticipantLimit() != 0 ) {
             throw new ConflictException(
                     "У события достигнут лимит запросов на участие");
         }
@@ -185,8 +188,12 @@ public class Validation {
         }
 
 
-
     }
 
+    public void limitRequestValidation(RequestStatus status, Event event, Integer confirmedRequests) {
+        if (status == RequestStatus.CONFIRMED && Objects.equals(event.getParticipantLimit(), confirmedRequests)) {
+            throw new ConflictException("Лимит заявок достигнут. Подтверждение невозможно");
+        }
     }
+}
 

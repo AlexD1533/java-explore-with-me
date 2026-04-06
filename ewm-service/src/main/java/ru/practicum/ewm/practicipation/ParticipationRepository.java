@@ -22,8 +22,8 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "JOIN FETCH e.initiator " +
             "WHERE e.initiator.id = :userId " +
             "AND e.id = :eventId " +
-            "AND p.id IN :ids " +
-            "AND p.status = 'PENDING'")
+            "AND p.id IN :ids ")
+
     List<ParticipationRequest> findAllForUpdateByParam(@Param("ids") List<Long> ids,
                                               @Param("eventId") Long eventId,
                                               @Param("userId") Long userId);
@@ -34,7 +34,10 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
     Long countConfirmedRequests(@Param("eventId") Long eventId);
 
 
+
+
     Integer countByEventId(Long eventId);
+
 
     List<ParticipationRequest> findAllByRequesterId(Long userId);
 
@@ -55,4 +58,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
             "WHERE :eventIds IS NULL OR e.id IN :eventIds " +
             "AND (r.status = 'CONFIRMED')")
     List<ParticipationRequest> findAllByEventIdsConfirmed(@Param("eventIds")List<Long> eventIds);
+
+    Integer countByEventIdAndStatus(Long id, RequestStatus requestStatus);
 }
