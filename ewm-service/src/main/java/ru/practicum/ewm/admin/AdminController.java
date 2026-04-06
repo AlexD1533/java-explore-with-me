@@ -1,8 +1,8 @@
-package ru.practicum.ewm.user;
+package ru.practicum.ewm.admin;
 
 import org.springframework.validation.annotation.Validated;
-import ru.practicum.ewm.category.CategoryDto;
-import ru.practicum.ewm.category.NewCategoryDto;
+import ru.practicum.ewm.category.dto.CategoryDto;
+import ru.practicum.ewm.category.dto.NewCategoryDto;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -10,13 +10,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.category.CategoryService;
-import ru.practicum.ewm.compilation.CompilationDto;
+import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.CompilationService;
-import ru.practicum.ewm.compilation.NewCompilationDto;
-import ru.practicum.ewm.compilation.UpdateCompilationRequest;
+import ru.practicum.ewm.compilation.dto.NewCompilationDto;
+import ru.practicum.ewm.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.user.UserService;
+import ru.practicum.ewm.user.dto.NewUserRequest;
+import ru.practicum.ewm.user.dto.UserDto;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;
@@ -169,6 +172,4 @@ public class AdminController {
         log.info("Подборка обновлена с id={}", updatedCompilation.id());
         return updatedCompilation;
     }
-
-
 }

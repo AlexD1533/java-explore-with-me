@@ -1,4 +1,4 @@
-package ru.practicum.ewm.practicipation;
+package ru.practicum.ewm.user.dto.practicipation;
 
 import jakarta.persistence.*;
 import lombok.*;

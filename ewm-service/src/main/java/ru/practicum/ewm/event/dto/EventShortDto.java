@@ -1,8 +1,8 @@
 package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.*;
-import ru.practicum.ewm.category.CategoryDto;
-import ru.practicum.ewm.user.UserShortDto;
+import ru.practicum.ewm.category.dto.CategoryDto;
+import ru.practicum.ewm.user.dto.UserShortDto;
 
 public record EventShortDto(
         @NotBlank

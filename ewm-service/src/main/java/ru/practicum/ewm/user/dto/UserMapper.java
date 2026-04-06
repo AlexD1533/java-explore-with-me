@@ -1,6 +1,7 @@
-package ru.practicum.ewm.user;
+package ru.practicum.ewm.user.dto;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.ewm.user.User;
 
 @Component
 public class UserMapper {

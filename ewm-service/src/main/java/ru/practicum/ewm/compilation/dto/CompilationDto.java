@@ -1,4 +1,4 @@
-package ru.practicum.ewm.compilation;
+package ru.practicum.ewm.compilation.dto;
 
 import jakarta.validation.constraints.*;
 import ru.practicum.ewm.event.dto.EventShortDto;

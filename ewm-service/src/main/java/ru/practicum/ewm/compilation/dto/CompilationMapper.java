@@ -1,7 +1,8 @@
-package ru.practicum.ewm.compilation;
+package ru.practicum.ewm.compilation.dto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.ewm.compilation.Compilation;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventMapper;
 import ru.practicum.ewm.event.dto.EventShortDto;

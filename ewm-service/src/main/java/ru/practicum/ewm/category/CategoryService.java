@@ -1,14 +1,15 @@
 package ru.practicum.ewm.category;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.category.dto.CategoryDto;
+import ru.practicum.ewm.category.dto.CategoryMapper;
+import ru.practicum.ewm.category.dto.NewCategoryDto;
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
-import ru.practicum.ewm.exception.DuplicatedDataException;
 import ru.practicum.ewm.exception.NotFoundException;
 
 

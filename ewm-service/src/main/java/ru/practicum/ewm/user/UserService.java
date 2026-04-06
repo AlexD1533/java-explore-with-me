@@ -6,6 +6,9 @@ import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.ewm.user.dto.NewUserRequest;
+import ru.practicum.ewm.user.dto.UserDto;
+import ru.practicum.ewm.user.dto.UserMapper;
 
 import java.util.List;
 

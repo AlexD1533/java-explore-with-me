@@ -1,6 +1,7 @@
-package ru.practicum.ewm.practicipation;
+package ru.practicum.ewm.user.dto.practicipation.dto;
 
 import lombok.Data;
+import ru.practicum.ewm.user.dto.practicipation.RequestStatus;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,9 @@
-package ru.practicum.ewm.practicipation;
+package ru.practicum.ewm.user.dto.practicipation.dto;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.event.Event;
+import ru.practicum.ewm.user.dto.practicipation.ParticipationRequest;
+import ru.practicum.ewm.user.dto.practicipation.RequestStatus;
 import ru.practicum.ewm.user.User;
 
 import java.time.LocalDateTime;

@@ -1,9 +1,6 @@
 package ru.practicum.ewm.validation;
 
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
 
@@ -16,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
-import ru.practicum.ewm.practicipation.ParticipationRepository;
+import ru.practicum.ewm.user.dto.practicipation.ParticipationRepository;
 
-import ru.practicum.ewm.practicipation.ParticipationRequest;
-import ru.practicum.ewm.practicipation.RequestStatus;
+import ru.practicum.ewm.user.dto.practicipation.ParticipationRequest;
+import ru.practicum.ewm.user.dto.practicipation.RequestStatus;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
@@ -37,7 +34,6 @@ public class Validation {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
-    private final ParticipationRepository participationRepository;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int HOURS_BEFORE_EVENT = 2;
@@ -61,20 +57,12 @@ public class Validation {
         }
     }
 
-    public void categoryIdValidation(Long id) {
-        if (categoryRepository.findById(id).isPresent()) {
-            throw new DuplicatedDataException("Id " + id + " уже используется");
-        }
-    }
-
-
     public void validateEventDate(String eventDateStr) {
         if (eventDateStr == null) {
             return;
         }
         LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, FORMATTER);
         LocalDateTime minDate = LocalDateTime.now().plusHours(HOURS_BEFORE_EVENT);
-
 
         if (eventDate.isBefore(minDate)) {
             throw new ValidationException(
@@ -167,13 +155,6 @@ public class Validation {
         }
     }
 
-
-    public void compilationEventListValidation(Set<Long> events) {
-        if (events.isEmpty()) {
-            throw new ValidationException("Подборка не может не содержать событий");
-        }
-    }
-
     public void dataTimeValidation(String rangeStart, String rangeEnd) {
         if (rangeStart == null || rangeEnd == null) {
             return;
@@ -193,15 +174,8 @@ public class Validation {
         if (newDate.isBefore(LocalDateTime.now())) {
             throw new ValidationException("Новая дата не может быть в прошлом");
         }
-
-
     }
 
-    public void limitRequestValidation(RequestStatus status, Event event, Integer confirmedRequests) {
-        if (status == RequestStatus.CONFIRMED && Objects.equals(event.getParticipantLimit(), confirmedRequests)) {
-            throw new ConflictException("Лимит заявок достигнут. Подтверждение невозможно");
-        }
-    }
 
     public void categoryNameUpdateValidation(String name, Long id) {
         if (categoryRepository.existsByNameAndIdNot(name, id)) {

@@ -15,8 +15,7 @@ import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.practicipation.ParticipationRepository;
-import ru.practicum.ewm.practicipation.ParticipationRequest;
+import ru.practicum.ewm.user.dto.practicipation.ParticipationRepository;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 

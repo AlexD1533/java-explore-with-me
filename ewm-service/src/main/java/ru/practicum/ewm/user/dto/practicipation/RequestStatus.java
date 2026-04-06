@@ -1,4 +1,4 @@
-package ru.practicum.ewm.practicipation;
+package ru.practicum.ewm.user.dto.practicipation;
 
 public enum RequestStatus {
     PENDING,

@@ -3,11 +3,12 @@ package ru.practicum.ewm.event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.*;
+import ru.practicum.ewm.category.dto.CategoryMapper;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
-import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.user.*;
+import ru.practicum.ewm.user.dto.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
