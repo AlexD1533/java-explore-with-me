@@ -38,6 +38,5 @@ public class StatsService {
                 .map(view -> new ViewStatsDto(view.getApp(), view.getUri(), view.getHits()))
                 .collect(Collectors.toList());
     }
-
 }
 

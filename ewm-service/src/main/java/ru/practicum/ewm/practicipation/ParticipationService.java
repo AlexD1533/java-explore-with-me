@@ -101,13 +101,12 @@ public class ParticipationService {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
 
-        Integer requestCount = participationRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
+        List<ParticipationRequest> requests = participationRepository.findAllByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
 
-
-        validation.dublicateRequests(userId, event);
+        validation.dublicateRequests(userId, requests, eventId);
         validation.currentUserValidation(userId, event);
         validation.noPublicEventValidation(event);
-        validation.limitRequestsValidation(event, requestCount);
+        validation.limitRequestsValidation(event, requests.size());
 
 
         ParticipationRequest createdRequest = requestParticipationMapper.toParticipationRequest(event, userId);

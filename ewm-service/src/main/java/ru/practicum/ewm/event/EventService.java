@@ -17,7 +17,6 @@ import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.practicipation.ParticipationRequest;
-import ru.practicum.ewm.practicipation.ParticipationRequestDto;
 import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
@@ -25,10 +24,11 @@ import ru.practicum.ewm.statistic.StatisticService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +42,6 @@ public class EventService {
     private final ParticipationRepository participationRepository;
 
     private final String serviceName = "ewm-main-service";
-    private final String nameByPath = "/event/";
     private final StatisticService statisticService;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -56,8 +55,6 @@ public class EventService {
                 new NotFoundException("Пользователя с id: " + "не существует"));
 
         Event newEvent = eventRepository.save(eventMapper.toEvent(request, category, user));
-        System.out.println("event  " + newEvent);
-        System.out.println(eventMapper.toEventFullDto(newEvent));
         return eventMapper.toEventFullDto(newEvent);
 
     }
@@ -73,7 +70,6 @@ public class EventService {
 
         Event event = eventRepository.findEventForUpdate(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
-
 
         validation.publicEventValidation(event);
 
@@ -170,14 +166,14 @@ public class EventService {
                 .map(Event::getId)
                 .toList();
 
-        List<ParticipationRequest> confirmedRequests = participationRepository.findAllByEventIdsConfirmed(eventIds);
+        Map<Long, Long> countsMap = participationRepository.findAllByEventIdsConfirmed(eventIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getEvent().getId(),
+                        Collectors.counting()
+                ));
 
-        events.forEach(e -> {
-            Long countRequests = confirmedRequests.stream()
-                    .filter(r -> Objects.equals(r.getEvent().getId(), e.getId()))
-                    .count();
-            e.setConfirmedRequests(countRequests);
-        });
+        events.forEach(e -> e.setConfirmedRequests(countsMap.getOrDefault(e.getId(), 0L)));
 
         return events;
     }

@@ -33,13 +33,11 @@ public class UserController {
     private final EventService eventService;
     private final ParticipationService participationService;
 
-
     @PostMapping("/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto request,
                                     @NotNull @PathVariable Long userId) {
         log.info("Событие: запрос на создание {}", request);
-        validation.userIdValidation(userId);
         validation.validateEventDate(request.eventDate());
 
         EventFullDto createdEvent = eventService.create(userId, request);
@@ -54,22 +52,17 @@ public class UserController {
             @NotNull @PathVariable Long userId,
              @Positive @RequestParam Long eventId) {
         log.info("Запрос: запрос на участие");
-
         validation.userIdValidation(userId);
-
-
         ParticipationRequestDto createdRequest = participationService.createRequestEvent(userId, eventId);
 
         log.info("Запрос создан с id={}", createdRequest.id());
         return createdRequest;
     }
 
-
     @GetMapping("/{userId}/events/{eventId}")
     public EventFullDto getEventByIdByUserId(
             @NotNull @PathVariable Long userId,
             @NotNull @PathVariable Long eventId
-
     ) {
         log.info("Событие: запрос на получение информации");
         validation.userIdValidation(userId);

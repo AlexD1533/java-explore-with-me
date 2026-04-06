@@ -16,13 +16,16 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
 
+import ru.practicum.ewm.practicipation.ParticipationRequest;
 import ru.practicum.ewm.practicipation.RequestStatus;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -85,11 +88,15 @@ public class Validation {
     }
 
 
-    public void dublicateRequests(Long userId, Event event) {
+    public void dublicateRequests(Long userId, List<ParticipationRequest> requests, Long eventId) {
 
-        if (!participationRepository.findAllByEventIdAndRequesterId(event.getId(), userId).isEmpty()) {
+        Optional<ParticipationRequest> request = requests.stream()
+                .filter(r -> Objects.equals(r.getRequester().getId(), userId))
+                .findFirst();
+
+        if (request.isPresent()) {
             throw new ConflictException(
-                    "Пользователь с id " + userId + "уже оставил заявку на участие в событие с id " + event.getId());
+                    "Пользователь с id " + userId + "уже оставил заявку на участие в событии с id " + eventId);
         }
     }
 
@@ -120,8 +127,6 @@ public class Validation {
     public void limitRequestsValidation(Event event, Integer requestCount) {
 
         if (event.getParticipantLimit() <= requestCount && event.getParticipantLimit() != 0) {
-            System.out.println("aaa " + event.getParticipantLimit() + " " + requestCount);
-
             throw new ConflictException(
                     "У события достигнут лимит запросов на участие");
         }

@@ -60,4 +60,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
     List<ParticipationRequest> findAllByEventIdsConfirmed(@Param("eventIds")List<Long> eventIds);
 
     Integer countByEventIdAndStatus(Long id, RequestStatus requestStatus);
+
+    List<ParticipationRequest> findAllByEventIdAndStatus(Long id, RequestStatus requestStatus);
 }
