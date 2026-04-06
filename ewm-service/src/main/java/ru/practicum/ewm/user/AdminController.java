@@ -1,6 +1,5 @@
 package ru.practicum.ewm.user;
 
-
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.category.CategoryDto;
 import ru.practicum.ewm.category.NewCategoryDto;
@@ -88,9 +87,9 @@ public class AdminController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(
             @PathVariable Long categoryId,
-           @Valid @RequestBody NewCategoryDto request) {
+            @Valid @RequestBody NewCategoryDto request) {
         log.info("Категория: запрос на обновление {}", request);
-
+        validation.categoryNameUpdateValidation(request.name(), categoryId);
         CategoryDto updatedCategory = categoryService.update(categoryId, request);
         log.info("Категория обновлена с id={}", updatedCategory.id());
         return updatedCategory;

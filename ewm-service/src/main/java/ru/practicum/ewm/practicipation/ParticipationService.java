@@ -1,18 +1,14 @@
 package ru.practicum.ewm.practicipation;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.user.User;
-import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +17,13 @@ public class ParticipationService {
     private final ParticipationRepository participationRepository;
     private final RequestParticipationMapper requestParticipationMapper;
     private final Validation validation;
-    private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
     public List<ParticipationRequestDto> getParticipationByUserIdAndEventId(Long userId, Long eventId) {
 
-        List<ParticipationRequest> participationRequests = participationRepository.findAllByEventIdAndInitiatorId(eventId, userId);
-
-        System.out.println("!!! " + participationRequests);
+        List<ParticipationRequest> participationRequests =
+                participationRepository.findAllByEventIdAndInitiatorId(eventId, userId);
         return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
-
     }
 
     public EventRequestStatusUpdateResult updateRequests(Long eventId, Long userId, EventRequestStatusUpdateRequest request) {
@@ -39,7 +32,6 @@ public class ParticipationService {
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
         Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-
         validation.limitRequestsValidation(event, confirmedRequests);
 
 
@@ -50,6 +42,7 @@ public class ParticipationService {
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
             requests.forEach(r -> {
+
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
                     throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания ");
@@ -73,10 +66,7 @@ public class ParticipationService {
             });
         }
 
-
-
         if (request.getStatus() == RequestStatus.REJECTED) {
-
             requests.forEach(r -> {
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
@@ -88,11 +78,7 @@ public class ParticipationService {
                 result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
             });
         }
-
-        System.out.println("sss " + result);
-
         participationRepository.saveAll(updateRequests);
-
         return result;
     }
 
@@ -108,7 +94,6 @@ public class ParticipationService {
         validation.noPublicEventValidation(event);
         validation.limitRequestsValidation(event, requests.size());
 
-
         ParticipationRequest createdRequest = requestParticipationMapper.toParticipationRequest(event, userId);
 
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0)
@@ -116,10 +101,9 @@ public class ParticipationService {
 
         return requestParticipationMapper.toParticipationRequestDto(participationRepository.save(createdRequest));
 
-
     }
 
-    public List<ParticipationRequestDto> getParticipationByUserId(@NotNull Long userId) {
+    public List<ParticipationRequestDto> getParticipationByUserId(Long userId) {
         List<ParticipationRequest> participationRequests = participationRepository.findAllByRequesterId(userId);
         return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
 
@@ -129,8 +113,6 @@ public class ParticipationService {
 
         ParticipationRequest request = participationRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(() ->
                 new NotFoundException("Такой заявки не существует"));
-
-        System.out.println("eee" + request);
 
         request.setStatus(RequestStatus.CANCELED);
         participationRepository.save(request);

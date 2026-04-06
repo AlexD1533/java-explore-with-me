@@ -103,10 +103,8 @@ public class EventService {
         LocalDateTime end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
 
         Pageable pageable = PageRequest.of(from / size, size);
-
         List<Event> events = eventRepository.findAllEventsByParam(usersIds, states, categoryIds,
                 start, end, pageable);
-
         events = setConfirmedRequestsForList(events);
 
         return events.stream().map(eventMapper::toEventFullDto).toList();
@@ -156,9 +154,7 @@ public class EventService {
         return eventMapper.toEventFullDto(targetEvent);
     }
 
-    public Long getConfirmedRequests(Long eventId) {
-        return participationRepository.countConfirmedRequests(eventId);
-    }
+
 
     public List<Event> setConfirmedRequestsForList(List<Event> events) {
 
@@ -176,6 +172,10 @@ public class EventService {
         events.forEach(e -> e.setConfirmedRequests(countsMap.getOrDefault(e.getId(), 0L)));
 
         return events;
+    }
+
+    public Long getConfirmedRequests(Long eventId) {
+        return participationRepository.countConfirmedRequests(eventId);
     }
 
 }

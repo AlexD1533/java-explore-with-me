@@ -61,11 +61,6 @@ public class CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Категория с id=" + id + " не найдена"));
 
-        if (categoryRepository.existsByNameAndIdNot(request.name(), id)) {
-            throw new ConflictException("Категория с таким именем уже существует");
-        }
-
-
         categoryMapper.updateCategoryFromDto(request, category);
         return categoryMapper.toCategoryDto(categoryRepository.save(category));
     }

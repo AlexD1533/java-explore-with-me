@@ -20,7 +20,6 @@ public class AdminService {
     private final CategoryRepository categoryRepository;
     private final EventService eventService;
 
-
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest request) {
 
         Event event = eventRepository.findById(eventId)
@@ -39,16 +38,10 @@ public class AdminService {
 
         event.setCategory(category);
         event.setConfirmedRequests(eventService.getConfirmedRequests(eventId));
-
         eventMapper.updateEventAdmin(request, event);
-
         Event result = eventRepository.save(event);
 
-        System.out.println(result);
-        System.out.println(eventMapper.toEventFullDto(result));
-
         return eventMapper.toEventFullDto(result);
-
     }
 
 }
