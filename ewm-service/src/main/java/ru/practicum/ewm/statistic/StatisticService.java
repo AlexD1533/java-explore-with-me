@@ -29,7 +29,7 @@ public class StatisticService {
         return statsClient.getStats(start, end, uris, unique);
     }
 
-    public Long getViews(Long eventId, HttpServletRequest request, List<ViewStatsDto> stats) {
+    public Long getViews(HttpServletRequest request, List<ViewStatsDto> stats) {
         return stats.stream()
                 .filter(s -> s.uri().equals(request.getRequestURI()))
                 .map(ViewStatsDto::hits)

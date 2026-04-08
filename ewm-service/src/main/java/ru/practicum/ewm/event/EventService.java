@@ -128,10 +128,6 @@ public class EventService {
         List<ViewStatsDto> stats = statisticService.getStatistic(start, end, List.of(request.getRequestURI()), false);
         statisticService.sendHit(serviceName, request);
 
-        events.forEach(s -> {
-            s.setViews(statisticService.getViews(s.getId(), request, stats));
-        });
-
         events = setConfirmedRequestsForList(events);
 
         return events.stream().map(eventMapper::toEventFullDto).toList();
@@ -144,7 +140,7 @@ public class EventService {
         List<ViewStatsDto> stats = statisticService.getStatistic(targetEvent.getCreatedOn(), LocalDateTime.now(), List.of(request.getRequestURI()), true);
         statisticService.sendHit(serviceName, request);
 
-        targetEvent.setViews(statisticService.getViews(targetEvent.getId(), request, stats));
+        targetEvent.setViews(statisticService.getViews(request, stats));
         targetEvent.setConfirmedRequests(getConfirmedRequests(eventId));
 
         eventRepository.save(targetEvent);
