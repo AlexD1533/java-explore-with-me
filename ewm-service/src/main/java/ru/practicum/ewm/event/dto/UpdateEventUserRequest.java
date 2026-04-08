@@ -18,7 +18,7 @@ public record UpdateEventUserRequest(
         LocationDto location,
 
         Boolean paid,
-        @Positive
+        @PositiveOrZero
         Integer participantLimit,
 
         Boolean requestModeration,

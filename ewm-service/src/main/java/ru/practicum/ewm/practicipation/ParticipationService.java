@@ -39,11 +39,9 @@ public class ParticipationService {
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
 
-        List<ParticipationRequest> allRequestsByEvent = participationRepository.findAllByEventId(eventId);
-        List<ParticipationRequest> confirmedRequestsList = allRequestsByEvent.stream()
-                .filter(r -> r.getStatus().equals(RequestStatus.CONFIRMED))
-                .toList();
-        Integer confirmedRequests = confirmedRequestsList.size();
+        //List<ParticipationRequest> confirmedRequestsList = participationRepository.findAllByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+
+        Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
         validation.limitRequestsValidation(event, confirmedRequests);
 
@@ -51,9 +49,8 @@ public class ParticipationService {
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();
 
-        List<ParticipationRequest> requestsForUpdate = allRequestsByEvent.stream()
-                .filter(r -> request.getRequestIds().contains(r.getId()))
-                .toList();
+        List<ParticipationRequest> requestsForUpdate =
+                participationRepository.findAllForUpdateByParam(request.getRequestIds(), eventId, userId);
 
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
@@ -98,17 +95,15 @@ public class ParticipationService {
         return result;
     }
 
+    @Transactional
     public ParticipationRequestDto createRequestEvent(Long userId, Long eventId) {
 
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
 
-        List<ParticipationRequest> allRequestsByEvent = participationRepository.findAllByEventId(eventId);
-        List<ParticipationRequest> confirmedRequests = allRequestsByEvent.stream()
-                .filter(r -> r.getStatus().equals(RequestStatus.CONFIRMED))
-                .toList();
+        List<ParticipationRequest> confirmedRequests = participationRepository.findAllByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
-        validation.dublicateRequests(userId, confirmedRequests, eventId);
+        validation.dublicateRequests(userId, eventId);
         validation.currentUserValidation(userId, event);
         validation.noPublicEventValidation(event);
         validation.limitRequestsValidation(event, confirmedRequests.size());

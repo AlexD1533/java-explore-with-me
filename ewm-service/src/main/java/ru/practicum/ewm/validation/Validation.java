@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 
+import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.practicipation.ParticipationRequest;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
@@ -31,6 +32,7 @@ public class Validation {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
+    private final ParticipationRepository participationRepository;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int HOURS_BEFORE_EVENT = 2;
@@ -75,13 +77,9 @@ public class Validation {
     }
 
 
-    public void dublicateRequests(Long userId, List<ParticipationRequest> requests, Long eventId) {
+    public void dublicateRequests(Long userId, Long eventId) {
 
-        Optional<ParticipationRequest> request = requests.stream()
-                .filter(r -> Objects.equals(r.getRequester().getId(), userId))
-                .findFirst();
-
-        if (request.isPresent()) {
+        if (participationRepository.existsByRequesterIdAndEventId(userId, eventId)) {
             throw new ConflictException(
                     "Пользователь с id " + userId + "уже оставил заявку на участие в событии с id " + eventId);
         }
