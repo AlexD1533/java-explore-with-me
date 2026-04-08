@@ -2,6 +2,7 @@ package ru.practicum.ewm.practicipation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.event.*;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
@@ -13,6 +14,7 @@ import ru.practicum.ewm.validation.Validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,22 +32,32 @@ public class ParticipationService {
         return participationRequests.stream().map(requestParticipationMapper::toParticipationRequestDto).toList();
     }
 
+    @Transactional
     public EventRequestStatusUpdateResult updateRequests(Long eventId, Long userId, EventRequestStatusUpdateRequest request) {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
-        Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+
+        List<ParticipationRequest> allRequestsByEvent = participationRepository.findAllByEventId(eventId);
+        List<ParticipationRequest> confirmedRequestsList = allRequestsByEvent.stream()
+                .filter(r -> r.getStatus().equals(RequestStatus.CONFIRMED))
+                .toList();
+        Integer confirmedRequests = confirmedRequestsList.size();
+
         validation.limitRequestsValidation(event, confirmedRequests);
 
 
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();
 
-        List<ParticipationRequest> requests = participationRepository.findAllForUpdateByParam(request.getRequestIds(), eventId, userId);
+        List<ParticipationRequest> requestsForUpdate = allRequestsByEvent.stream()
+                .filter(r -> request.getRequestIds().contains(r.getId()))
+                .toList();
+
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
-            requests.forEach(r -> {
+            requestsForUpdate.forEach(r -> {
 
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
@@ -71,7 +83,7 @@ public class ParticipationService {
         }
 
         if (request.getStatus() == RequestStatus.REJECTED) {
-            requests.forEach(r -> {
+            requestsForUpdate.forEach(r -> {
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
                     throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания");
@@ -91,12 +103,15 @@ public class ParticipationService {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Событие не найдено"));
 
-        List<ParticipationRequest> requests = participationRepository.findAllByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
+        List<ParticipationRequest> allRequestsByEvent = participationRepository.findAllByEventId(eventId);
+        List<ParticipationRequest> confirmedRequests = allRequestsByEvent.stream()
+                .filter(r -> r.getStatus().equals(RequestStatus.CONFIRMED))
+                .toList();
 
-        validation.dublicateRequests(userId, requests, eventId);
+        validation.dublicateRequests(userId, confirmedRequests, eventId);
         validation.currentUserValidation(userId, event);
         validation.noPublicEventValidation(event);
-        validation.limitRequestsValidation(event, requests.size());
+        validation.limitRequestsValidation(event, confirmedRequests.size());
 
         ParticipationRequest createdRequest = requestParticipationMapper.toParticipationRequest(event, userId);
 
