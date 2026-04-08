@@ -109,9 +109,19 @@ public class EventService {
     }
 
     public List<EventFullDto> searchEventsInfoByParmPublic(String text, List<Long> categories,
-                                                           Boolean paid, String rangeStart, String rangeEnd, Integer from, Integer size, HttpServletRequest request) {
+                                                           Boolean paid, String rangeStart, String rangeEnd,
+                                                           Integer from, Integer size, Boolean onlyAvailable,
+                                                           String sort, HttpServletRequest request) {
         LocalDateTime start;
         LocalDateTime end;
+
+        Sort sortOrder = Sort.unsorted();
+        if ("EVENT_DATE".equals(sort)) {
+            sortOrder = Sort.by("eventDate").ascending();
+        } else if ("VIEWS".equals(sort)) {
+            sortOrder = Sort.by("views").descending();
+        }
+
 
         if (rangeStart == null && rangeEnd == null) {
             start = LocalDateTime.now();
@@ -121,15 +131,12 @@ public class EventService {
             end = (rangeEnd != null) ? LocalDateTime.parse(rangeEnd, formatter) : null;
         }
 
-        Pageable pageable = PageRequest.of(from / size, size);
+        Pageable pageable = PageRequest.of(from / size, size, sortOrder);
         List<Event> events = eventRepository.findAllEventsByParamPublic(text, categories, paid,
-                start, end, pageable);
+                start, end, onlyAvailable, pageable);
 
-        List<ViewStatsDto> stats = statisticService.getStatistic(start, end, List.of(request.getRequestURI()), false);
         statisticService.sendHit(serviceName, request);
-
         events = setConfirmedRequestsForList(events);
-
         return events.stream().map(eventMapper::toEventFullDto).toList();
     }
 
@@ -144,7 +151,6 @@ public class EventService {
         targetEvent.setConfirmedRequests(getConfirmedRequests(eventId));
 
         eventRepository.save(targetEvent);
-        System.out.println("qqq " + targetEvent);
         return eventMapper.toEventFullDto(targetEvent);
     }
 

@@ -62,13 +62,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:text AS string), '%'))))" +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND (CAST(:rangeStart AS timestamp) IS NULL OR e.eventDate > :rangeStart) " +
-            "AND (CAST(:rangeEnd AS timestamp) IS NULL OR e.eventDate < :rangeEnd)")
+            "AND (CAST(:rangeEnd AS timestamp) IS NULL OR e.eventDate < :rangeEnd) " +
+            "AND (:onlyAvailable = false OR e.participantLimit = 0 OR e.confirmedRequests < e.participantLimit)")
     List<Event> findAllEventsByParamPublic(
             @Param("text") String text,
             @Param("categories") List<Long> categories,
             @Param("paid") Boolean paid,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
+            @Param("onlyAvailable") Boolean onlyAvailable,
             Pageable pageable);
 
     Optional<Event> findByIdAndState(Long eventId, EventState state);

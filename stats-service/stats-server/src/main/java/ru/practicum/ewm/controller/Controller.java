@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.model.EndpointHit;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,15 +41,21 @@ public class Controller {
     }
 
     @GetMapping("/stats")
-    public List<ViewStatsDto> getVisitInfo(
+    public ResponseEntity<List<ViewStatsDto>> getVisitInfo(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique
     ) {
-validation.dataTimeValidation(start, end);
         log.info("Запрос на получение статистики  посещений");
-        return statsService.getVisitInfo(start, end, uris, unique);
+
+      validation.dataTimeValidation(start, end);
+
+        List<ViewStatsDto> result = statsService.getVisitInfo(start, end, uris, unique);
+        if (result.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        return ResponseEntity.ok(result);
     }
 
 

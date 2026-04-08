@@ -35,6 +35,8 @@ public class PublicController {
             @RequestParam(required = false) String rangeEnd,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) Boolean onlyAvailable,
+            @RequestParam(required = false) String sort,
             HttpServletRequest request
 
     ) {
@@ -42,7 +44,7 @@ public class PublicController {
         validation.dataTimeValidation(rangeStart, rangeEnd);
 
 
-        List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size, request);
+        List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size, onlyAvailable, sort, request);
         log.info("Результат поиска: {}", events);
         return events;
     }

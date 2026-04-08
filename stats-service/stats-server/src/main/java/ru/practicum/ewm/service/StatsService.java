@@ -26,6 +26,7 @@ public class StatsService {
 
     public List<ViewStatsDto> getVisitInfo(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
+
         List<ViewStats> stats;
         if (unique) {
             stats = statsRepository.getVisitsStatisticDistinct(start, end, uris);
