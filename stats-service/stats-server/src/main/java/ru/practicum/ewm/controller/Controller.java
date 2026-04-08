@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.service.StatsService;
+import ru.practicum.ewm.validation.Validation;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 public class Controller {
 
     private final StatsService statsService;
-
+    private final Validation validation;
 
     @PostMapping("/hit")
     public ResponseEntity<MessageResponse> saveRequestInfo(@Valid @RequestBody EndpointHitDto.NewEndpointHitDto request) {
@@ -45,7 +46,7 @@ public class Controller {
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique
     ) {
-
+validation.dataTimeValidation(start, end);
         log.info("Запрос на получение статистики  посещений");
         return statsService.getVisitInfo(start, end, uris, unique);
     }

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class StatsService {
 
     private final StatsRepository statsRepository;
-
     private final RequestMapper requestMapper;
 
     public EndpointHit create(EndpointHitDto.NewEndpointHitDto request) {
