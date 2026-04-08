@@ -14,7 +14,6 @@ import ru.practicum.ewm.validation.Validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +37,8 @@ public class ParticipationService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено"));
 
-
-        //List<ParticipationRequest> confirmedRequestsList = participationRepository.findAllByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-
         Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-
         validation.limitRequestsValidation(event, confirmedRequests);
-
 
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();

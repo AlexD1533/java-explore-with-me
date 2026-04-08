@@ -15,15 +15,12 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 
 import ru.practicum.ewm.practicipation.ParticipationRepository;
-import ru.practicum.ewm.practicipation.ParticipationRequest;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 
 @Component
 @RequiredArgsConstructor
