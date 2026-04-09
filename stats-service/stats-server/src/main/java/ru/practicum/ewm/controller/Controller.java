@@ -49,7 +49,7 @@ public class Controller {
     ) {
         log.info("Запрос на получение статистики  посещений");
 
-      validation.dataTimeValidation(start, end);
+        validation.dataTimeValidation(start, end);
 
         List<ViewStatsDto> result = statsService.getVisitInfo(start, end, uris, unique);
         if (result.isEmpty()) {

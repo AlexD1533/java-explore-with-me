@@ -43,7 +43,6 @@ public class PublicController {
         log.info("События: запрос на получение информации");
         validation.dataTimeValidation(rangeStart, rangeEnd);
 
-
         List<EventFullDto> events = eventService.searchEventsInfoByParmPublic(text, categories, paid, rangeStart, rangeEnd, from, size, onlyAvailable, sort, request);
         log.info("Результат поиска: {}", events);
         return events;
