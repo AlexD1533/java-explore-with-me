@@ -1,0 +1,12 @@
+package ru.practicum.ewm.category.dto;
+
+import jakarta.validation.constraints.*;
+
+public record CategoryDto(
+        Long id,
+
+        @NotBlank
+        @Size(min = 1, max = 50)
+        String name
+) {
+}

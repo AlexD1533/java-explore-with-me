@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 public class EndpointHitDto {
 
+    @Builder
     public record NewEndpointHitDto(
             @NotBlank(message = "Название приложения не может быть пустым")
             String app,
@@ -24,7 +26,9 @@ public class EndpointHitDto {
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 
             LocalDateTime timestamp
-    ) {}
+    ) {
+    }
 
-    public record FullEndpointHitDto(Long id, String app, String uri, String ip, LocalDateTime timestamp) {}
+    public record FullEndpointHitDto(Long id, String app, String uri, String ip, LocalDateTime timestamp) {
+    }
 }

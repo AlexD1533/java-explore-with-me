@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class StatsService {
 
     private final StatsRepository statsRepository;
-
     private final RequestMapper requestMapper;
 
     public EndpointHit create(EndpointHitDto.NewEndpointHitDto request) {
@@ -26,6 +25,7 @@ public class StatsService {
     }
 
     public List<ViewStatsDto> getVisitInfo(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
 
         List<ViewStats> stats;
         if (unique) {
@@ -38,6 +38,5 @@ public class StatsService {
                 .map(view -> new ViewStatsDto(view.getApp(), view.getUri(), view.getHits()))
                 .collect(Collectors.toList());
     }
-
 }
 
