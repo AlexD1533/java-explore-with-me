@@ -192,7 +192,7 @@ public class Validation {
     }
 
     public void commentUserExistValidation(Long userId, Long eventId) {
-        if (commentRepository.existByUserIdAndEventId(userId, eventId)) {
+        if (commentRepository.existsByAuthorIdAndEventId(userId, eventId)) {
             throw new ConflictException("Пользователь уже оставлял комментарий к событию");
         }
     }
