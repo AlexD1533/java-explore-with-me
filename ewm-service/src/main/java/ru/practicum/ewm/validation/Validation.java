@@ -97,7 +97,15 @@ public class Validation {
 
         if (event.getState().equals(EventState.CANCELED) || event.getState().equals(EventState.PENDING)) {
             throw new ConflictException(
-                    "Нельзя участвовать в неопубликованном событии");
+                    "Нельзя участвовать в неопубликованном событии.");
+        }
+    }
+
+    public void noPublicEventValidationForComment(Event event) {
+
+        if (event.getState().equals(EventState.CANCELED) || event.getState().equals(EventState.PENDING)) {
+            throw new ConflictException(
+                    "Нельзя комментировать неопубликованное событие.");
         }
     }
 
@@ -175,12 +183,6 @@ public class Validation {
     public void categoryNameUpdateValidation(String name, Long id) {
         if (categoryRepository.existsByNameAndIdNot(name, id)) {
             throw new ConflictException("Категория с таким именем уже существует");
-        }
-    }
-
-    public void dataEndEventValidation(LocalDateTime eventDate) {
-        if (eventDate.isAfter(LocalDateTime.now())) {
-            throw new ValidationException("Дата события не может быть в будущем");
         }
     }
 

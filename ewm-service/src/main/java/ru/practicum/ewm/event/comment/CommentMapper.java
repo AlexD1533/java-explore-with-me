@@ -40,4 +40,11 @@ public class CommentMapper {
                 .map(this::mapToCommentDto)
                 .collect(Collectors.toList());
     }
+
+    public void mapFromUpdateComment(Comment comment, UpdateCommentRequest request) {
+
+        if (!request.getText().isBlank()) {
+            comment.setText(request.getText());
+        }
+    }
 }
