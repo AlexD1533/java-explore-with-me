@@ -6,6 +6,7 @@ import ru.practicum.ewm.event.EventRepository;
 
 import ru.practicum.ewm.event.EventState;
 
+import ru.practicum.ewm.event.comment.CommentRepository;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.DuplicatedDataException;
@@ -15,6 +16,7 @@ import ru.practicum.ewm.category.CategoryRepository;
 import ru.practicum.ewm.exception.ValidationException;
 
 import ru.practicum.ewm.practicipation.ParticipationRepository;
+import ru.practicum.ewm.practicipation.RequestStatus;
 import ru.practicum.ewm.user.StateActionAdmin;
 import ru.practicum.ewm.user.UserRepository;
 
@@ -30,6 +32,7 @@ public class Validation {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final ParticipationRepository participationRepository;
+    private final CommentRepository commentRepository;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final int HOURS_BEFORE_EVENT = 2;
@@ -172,6 +175,25 @@ public class Validation {
     public void categoryNameUpdateValidation(String name, Long id) {
         if (categoryRepository.existsByNameAndIdNot(name, id)) {
             throw new ConflictException("Категория с таким именем уже существует");
+        }
+    }
+
+    public void dataEndEventValidation(LocalDateTime eventDate) {
+        if (eventDate.isAfter(LocalDateTime.now())) {
+            throw new ValidationException("Дата события не может быть в будущем");
+        }
+    }
+
+    public void userFromCommentValidation(Long userId, Long eventId) {
+
+        if (!participationRepository.existsByRequesterIdAndEventIdAndStatus(userId, eventId, RequestStatus.CONFIRMED)) {
+            throw new ConflictException("Нет подтвержденных заявок для события от текущего пользователя");
+        }
+    }
+
+    public void commentUserExistValidation(Long userId, Long eventId) {
+        if (commentRepository.existByUserIdAndEventId(userId, eventId)) {
+            throw new ConflictException("Пользователь уже оставлял комментарий к событию");
         }
     }
 }
