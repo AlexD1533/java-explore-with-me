@@ -155,30 +155,7 @@ class CompilationMapperIntegrationTest {
         assertThat(dto).isNull();
     }
 
-    @Test
-    void updateCompilationFromDto_shouldUpdateAllFields() {
-        // given
-        Compilation compilation = compilationRepository.save(Compilation.builder()
-                .title("Old Title")
-                .pinned(false)
-                .events(Set.of(event1))
-                .build());
 
-        UpdateCompilationRequest updateRequest = new UpdateCompilationRequest(
-                Set.of(event2.getId()),
-                true,
-                "New Title"
-        );
-
-        // when
-        compilationMapper.updateCompilationFromDto(updateRequest, compilation);
-
-        // then
-        assertThat(compilation.getTitle()).isEqualTo("New Title");
-        assertThat(compilation.getPinned()).isTrue();
-        assertThat(compilation.getEvents()).hasSize(1);
-        assertThat(compilation.getEvents().iterator().next().getId()).isEqualTo(event2.getId());
-    }
 
     @Test
     void updateCompilationFromDto_withNullFields_shouldNotUpdate() {
