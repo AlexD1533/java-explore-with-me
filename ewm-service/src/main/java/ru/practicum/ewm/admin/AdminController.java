@@ -17,9 +17,9 @@ import ru.practicum.ewm.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.event.EventService;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.user.UserService;
-import ru.practicum.ewm.user.dto.NewUserRequest;
-import ru.practicum.ewm.user.dto.UserDto;
+import ru.practicum.ewm.UserService;
+import ru.practicum.ewm.dto.NewUserRequest;
+import ru.practicum.ewm.dto.UserDto;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;

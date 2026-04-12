@@ -3,7 +3,7 @@ package ru.practicum.ewm.event.comment;
 import jakarta.persistence.*;
 import lombok.Data;
 import ru.practicum.ewm.event.Event;
-import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.User;
 
 
 import java.time.LocalDateTime;

@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.location.Location;
-import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.User;
 
 import java.time.LocalDateTime;
 

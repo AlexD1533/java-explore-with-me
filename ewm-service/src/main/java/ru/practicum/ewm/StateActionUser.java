@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user;
+package ru.practicum.ewm;
 
 public enum StateActionUser {
     SEND_TO_REVIEW,
