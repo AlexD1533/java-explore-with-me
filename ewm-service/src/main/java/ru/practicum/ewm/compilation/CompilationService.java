@@ -47,11 +47,18 @@ public class CompilationService {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Подборки с id: " + compId + "не существует"));
 
+        Set<Event> compilationEvents = compilation.getEvents();
+
+        compilationMapper.updateCompilationFromDto(request, compilation);
+
         if (!request.events().isEmpty()) {
             Set<Event> events = new HashSet<>(eventRepository.findAllById(request.events()));
             compilation.setEvents(events);
+        } else {
+            compilation.setEvents(compilationEvents);
         }
-        compilationMapper.updateCompilationFromDto(request, compilation);
+        System.out.println("www " + compilation);
+
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
 
