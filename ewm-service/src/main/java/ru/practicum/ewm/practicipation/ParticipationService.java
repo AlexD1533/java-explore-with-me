@@ -60,24 +60,21 @@ public class ParticipationService {
                 if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
-                    currentConfirmedRequestsCount++;
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
-                } else
-
-                if (event.getParticipantLimit() > confirmedRequests && currentConfirmedRequestsCount < event.getParticipantLimit()) {
+                    currentConfirmedRequestsCount++;
+                } else if (event.getParticipantLimit() > confirmedRequests && currentConfirmedRequestsCount < event.getParticipantLimit()) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
+                    currentConfirmedRequestsCount++;
                 } else {
                     r.setStatus(RequestStatus.REJECTED);
                     updateRequests.add(r);
                     result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
                 }
             }
-        } else
-
-        if (request.getStatus() == RequestStatus.REJECTED) {
-            requestsForUpdate.forEach(r -> {
+        } else if (request.getStatus() == RequestStatus.REJECTED) {
+            for (ParticipationRequest r : requestsForUpdate) {
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
                     throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания");
@@ -86,7 +83,7 @@ public class ParticipationService {
                 r.setStatus(RequestStatus.REJECTED);
                 updateRequests.add(r);
                 result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
-            });
+            }
         }
         participationRepository.saveAll(updateRequests);
         return result;
