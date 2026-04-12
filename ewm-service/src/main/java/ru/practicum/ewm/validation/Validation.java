@@ -17,8 +17,8 @@ import ru.practicum.ewm.exception.ValidationException;
 
 import ru.practicum.ewm.practicipation.ParticipationRepository;
 import ru.practicum.ewm.practicipation.RequestStatus;
-import ru.practicum.ewm.StateActionAdmin;
-import ru.practicum.ewm.UserRepository;
+import ru.practicum.ewm.user.StateActionAdmin;
+import ru.practicum.ewm.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

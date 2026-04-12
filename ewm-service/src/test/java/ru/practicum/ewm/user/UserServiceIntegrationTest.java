@@ -5,11 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.User;
-import ru.practicum.ewm.UserRepository;
-import ru.practicum.ewm.UserService;
-import ru.practicum.ewm.dto.NewUserRequest;
-import ru.practicum.ewm.dto.UserDto;
+import ru.practicum.ewm.user.dto.NewUserRequest;
+import ru.practicum.ewm.user.dto.UserDto;
 
 import java.util.List;
 

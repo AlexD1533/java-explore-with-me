@@ -2,15 +2,15 @@ package ru.practicum.ewm.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.StateActionAdmin;
-import ru.practicum.ewm.StateActionUser;
-import ru.practicum.ewm.User;
+import ru.practicum.ewm.user.StateActionAdmin;
+import ru.practicum.ewm.user.StateActionUser;
+import ru.practicum.ewm.user.User;
 import ru.practicum.ewm.category.*;
 import ru.practicum.ewm.category.dto.CategoryMapper;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.location.LocationDto;
-import ru.practicum.ewm.dto.UserMapper;
+import ru.practicum.ewm.user.dto.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

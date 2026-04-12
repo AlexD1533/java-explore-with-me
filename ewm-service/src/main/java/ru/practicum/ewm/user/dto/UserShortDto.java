@@ -1,4 +1,4 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.ewm.user.dto;
 
 import jakarta.validation.constraints.*;
 

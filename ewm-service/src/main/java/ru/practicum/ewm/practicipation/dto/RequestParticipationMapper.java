@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.practicipation.ParticipationRequest;
 import ru.practicum.ewm.practicipation.RequestStatus;
-import ru.practicum.ewm.User;
+import ru.practicum.ewm.user.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

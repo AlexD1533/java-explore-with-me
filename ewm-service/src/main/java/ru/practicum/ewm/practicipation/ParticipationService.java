@@ -40,6 +40,8 @@ public class ParticipationService {
         Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         validation.limitRequestsValidation(event, confirmedRequests);
 
+        int currentConfirmedRequestsCount = confirmedRequests;
+
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();
 
@@ -48,7 +50,7 @@ public class ParticipationService {
 
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
-            requestsForUpdate.forEach(r -> {
+          for (ParticipationRequest r : requestsForUpdate) {
 
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
@@ -58,10 +60,11 @@ public class ParticipationService {
                 if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
+                    currentConfirmedRequestsCount++;
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
-                }
+                } else
 
-                if (event.getParticipantLimit() > confirmedRequests && result.getConfirmedRequests().size() < event.getParticipantLimit()) {
+                if (event.getParticipantLimit() > confirmedRequests && currentConfirmedRequestsCount < event.getParticipantLimit()) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
@@ -70,8 +73,8 @@ public class ParticipationService {
                     updateRequests.add(r);
                     result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
                 }
-            });
-        }
+            }
+        } else
 
         if (request.getStatus() == RequestStatus.REJECTED) {
             requestsForUpdate.forEach(r -> {

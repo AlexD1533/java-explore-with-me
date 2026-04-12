@@ -16,8 +16,8 @@ import ru.practicum.ewm.event.dto.NewEventDto;
 import ru.practicum.ewm.event.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.practicipation.ParticipationRepository;
-import ru.practicum.ewm.User;
-import ru.practicum.ewm.UserRepository;
+import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
 import ru.practicum.ewm.statistic.StatisticService;
 

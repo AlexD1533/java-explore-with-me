@@ -2,7 +2,7 @@ package ru.practicum.ewm.event.dto;
 
 import jakarta.validation.constraints.*;
 import ru.practicum.ewm.location.LocationDto;
-import ru.practicum.ewm.StateActionUser;
+import ru.practicum.ewm.user.StateActionUser;
 
 public record UpdateEventUserRequest(
         @Size(min = 20, max = 2000)

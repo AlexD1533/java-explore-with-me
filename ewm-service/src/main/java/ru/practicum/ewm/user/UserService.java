@@ -1,4 +1,4 @@
-package ru.practicum.ewm;
+package ru.practicum.ewm.user;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -6,9 +6,9 @@ import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.dto.NewUserRequest;
-import ru.practicum.ewm.dto.UserDto;
-import ru.practicum.ewm.dto.UserMapper;
+import ru.practicum.ewm.user.dto.NewUserRequest;
+import ru.practicum.ewm.user.dto.UserDto;
+import ru.practicum.ewm.user.dto.UserMapper;
 
 import java.util.List;
 

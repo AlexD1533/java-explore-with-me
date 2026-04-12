@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.event.EventRepository;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.User;
-import ru.practicum.ewm.UserRepository;
+import ru.practicum.ewm.user.User;
+import ru.practicum.ewm.user.UserRepository;
 import ru.practicum.ewm.validation.Validation;
 
 import java.util.List;

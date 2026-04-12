@@ -1,4 +1,4 @@
-package ru.practicum.ewm;
+package ru.practicum.ewm.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

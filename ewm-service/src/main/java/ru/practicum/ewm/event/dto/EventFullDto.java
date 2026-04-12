@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import ru.practicum.ewm.category.dto.CategoryDto;
 import ru.practicum.ewm.event.EventState;
 import ru.practicum.ewm.location.LocationDto;
-import ru.practicum.ewm.dto.UserShortDto;
+import ru.practicum.ewm.user.dto.UserShortDto;
 
 public record EventFullDto(
         @NotBlank

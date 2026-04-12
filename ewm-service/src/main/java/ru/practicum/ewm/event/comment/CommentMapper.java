@@ -2,7 +2,7 @@ package ru.practicum.ewm.event.comment;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.event.Event;
-import ru.practicum.ewm.User;
+import ru.practicum.ewm.user.User;
 
 
 import java.time.LocalDateTime;
