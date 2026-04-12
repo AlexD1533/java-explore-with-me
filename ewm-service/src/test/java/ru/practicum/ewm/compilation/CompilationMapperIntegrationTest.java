@@ -9,8 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.Category;
 import ru.practicum.ewm.category.CategoryRepository;
-import ru.practicum.ewm.compilation.Compilation;
-import ru.practicum.ewm.compilation.CompilationRepository;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
 import ru.practicum.ewm.compilation.dto.CompilationMapper;
 import ru.practicum.ewm.compilation.dto.NewCompilationDto;
@@ -154,7 +152,6 @@ class CompilationMapperIntegrationTest {
         // then
         assertThat(dto).isNull();
     }
-
 
 
     @Test
