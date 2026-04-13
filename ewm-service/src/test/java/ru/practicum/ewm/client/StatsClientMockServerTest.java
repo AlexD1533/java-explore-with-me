@@ -75,12 +75,10 @@ class StatsClientMockServerTest {
                 .queryParam("unique", true)
                 .toUriString();
 
-        String responseJson = """
-                [
-                    {"app": "ewm-main-service", "uri": "/events/1", "hits": 10},
-                    {"app": "ewm-main-service", "uri": "/events/2", "hits": 5}
-                ]
-                """;
+        String responseJson = "["
+                + "{\"app\": \"ewm-main-service\", \"uri\": \"/events/1\", \"hits\": 10},"
+                + "{\"app\": \"ewm-main-service\", \"uri\": \"/events/2\", \"hits\": 5}"
+                + "]";
 
         mockServer.expect(requestTo(expectedUrl))
                 .andExpect(method(HttpMethod.GET))
