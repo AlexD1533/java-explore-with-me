@@ -66,6 +66,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable Long commentId) {
         log.info("Комментарий: запрос на удаление {}", commentId);
+        validation.commentExistValidation(commentId);
         commentService.delete(commentId);
         log.info("Комментарий {} удален", commentId);
 

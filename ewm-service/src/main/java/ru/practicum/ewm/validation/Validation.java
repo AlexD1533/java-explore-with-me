@@ -13,6 +13,7 @@ import ru.practicum.ewm.exception.DuplicatedDataException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.CategoryRepository;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
 
 import ru.practicum.ewm.practicipation.ParticipationRepository;
@@ -196,6 +197,12 @@ public class Validation {
     public void commentUserExistValidation(Long userId, Long eventId) {
         if (commentRepository.existsByAuthorIdAndEventId(userId, eventId)) {
             throw new ConflictException("Пользователь уже оставлял комментарий к событию");
+        }
+    }
+
+    public void commentExistValidation(Long commentId) {
+        if (!commentRepository.existsById(commentId)) {
+            throw new NotFoundException("Комментария не существует");
         }
     }
 }
