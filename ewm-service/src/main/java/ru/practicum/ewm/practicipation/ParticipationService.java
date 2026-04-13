@@ -50,7 +50,7 @@ public class ParticipationService {
 
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
-          for (ParticipationRequest r : requestsForUpdate) {
+            for (ParticipationRequest r : requestsForUpdate) {
 
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
@@ -62,11 +62,13 @@ public class ParticipationService {
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
                     currentConfirmedRequestsCount++;
+
                 } else if (event.getParticipantLimit() > confirmedRequests && currentConfirmedRequestsCount < event.getParticipantLimit()) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
                     currentConfirmedRequestsCount++;
+
                 } else {
                     r.setStatus(RequestStatus.REJECTED);
                     updateRequests.add(r);
