@@ -1,0 +1,340 @@
+{
+  "info": {
+    "_postman_id": "comment-tests-correct-paths",
+    "name": "Тесты комментариев (Правильные пути)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Создание комментария (Успех)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const main = async () => {\r",
+              "    const api = new API(pm);\r",
+              "    const rnd = new RandomUtils();\r",
+              "\r",
+              "    try {\r",
+              "        const creator = await api.addUser(rnd.getUser());\r",
+              "        const participant = await api.addUser(rnd.getUser());\r",
+              "        const category = await api.addCategory(rnd.getCategory());\r",
+              "        let event = await api.addEvent(creator.id, rnd.getFutureEvent(category.id));\r",
+              "        event = await api.publishEvent(event.id);\r",
+              "        const req = await api.addRequest(participant.id, event.id);\r",
+              "        await api.confirmRequest(creator.id, event.id, [req.id]);\r",
+              "        \r",
+              "        pm.collectionVariables.set('userId', participant.id);\r",
+              "        pm.collectionVariables.set('eventId', event.id);\r",
+              "        \r",
+              "        pm.request.url = `http://localhost:8080/users/${participant.id}/events/${event.id}/comment`;\r",
+              "        pm.request.body.update({ mode: 'raw', raw: JSON.stringify({ text: \"Отличное событие!\" }) });\r",
+              "    } catch(err) { console.error(err); }\r",
+              "};\r",
+              "setTimeout(main, 100);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 201\", () => pm.response.to.have.status(201));\r",
+              "const comment = pm.response.json();\r",
+              "pm.collectionVariables.set('commentId', comment.id);\r",
+              "pm.test(\"Есть все поля\", () => pm.expect(comment).to.have.all.keys('id', 'text', 'authorName', 'created'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "url": {"raw": "http://localhost:8080/users/1/events/1/comment", "host": ["localhost:8080"], "path": ["users", "1", "events", "1", "comment"]}
+      }
+    },
+    {
+      "name": "2. Обновление комментария",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const userId = pm.collectionVariables.get('userId');\r",
+              "const eventId = pm.collectionVariables.get('eventId');\r",
+              "pm.request.url = `http://localhost:8080/users/${userId}/events/${eventId}/comment`;\r",
+              "pm.request.body.update({ mode: 'raw', raw: JSON.stringify({ text: \"Обновленный комментарий!\" }) });"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 200\", () => pm.response.to.have.status(200));\r",
+              "const comment = pm.response.json();\r",
+              "pm.test(\"Текст обновлен\", () => pm.expect(comment.text).to.eql(\"Обновленный комментарий!\"));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "url": {"raw": "http://localhost:8080/users/{{userId}}/events/{{eventId}}/comment", "host": ["localhost:8080"], "path": ["users", "{{userId}}", "events", "{{eventId}}", "comment"]}
+      }
+    },
+    {
+      "name": "3. Получить комментарии пользователя",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 200\", () => pm.response.to.have.status(200));\r",
+              "const comments = pm.response.json();\r",
+              "pm.test(\"Список не пустой\", () => pm.expect(comments.length).to.be.greaterThan(0));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {"raw": "http://localhost:8080/users/{{userId}}/comments", "host": ["localhost:8080"], "path": ["users", "{{userId}}", "comments"]}
+      }
+    },
+    {
+      "name": "4. Получить комментарии события",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 200\", () => pm.response.to.have.status(200));\r",
+              "const comments = pm.response.json();\r",
+              "pm.test(\"Список не пустой\", () => pm.expect(comments.length).to.be.greaterThan(0));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {"raw": "http://localhost:8080/users/events/{{eventId}}/comments", "host": ["localhost:8080"], "path": ["users", "events", "{{eventId}}", "comments"]}
+      }
+    },
+    {
+      "name": "5. Удалить комментарий",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 204\", () => pm.response.to.have.status(204));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": {"raw": "http://localhost:8080/users/comments/{{commentId}}", "host": ["localhost:8080"], "path": ["users", "comments", "{{commentId}}"]}
+      }
+    },
+    {
+      "name": "6. Ошибка - нет заявки",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const main = async () => {\r",
+              "    const api = new API(pm);\r",
+              "    const rnd = new RandomUtils();\r",
+              "    try {\r",
+              "        const creator = await api.addUser(rnd.getUser());\r",
+              "        const stranger = await api.addUser(rnd.getUser());\r",
+              "        const category = await api.addCategory(rnd.getCategory());\r",
+              "        let event = await api.addEvent(creator.id, rnd.getFutureEvent(category.id));\r",
+              "        event = await api.publishEvent(event.id);\r",
+              "        \r",
+              "        pm.request.url = `http://localhost:8080/users/${stranger.id}/events/${event.id}/comment`;\r",
+              "        pm.request.body.update({ mode: 'raw', raw: JSON.stringify({ text: \"Тест\" }) });\r",
+              "    } catch(err) { console.error(err); }\r",
+              "};\r",
+              "setTimeout(main, 100);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 409\", () => pm.response.to.have.status(409));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "url": {"raw": "http://localhost:8080/users/1/events/1/comment", "host": ["localhost:8080"], "path": ["users", "1", "events", "1", "comment"]}
+      }
+    },
+    {
+      "name": "7. Ошибка - комментарий уже существует",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const main = async () => {\r",
+              "    const api = new API(pm);\r",
+              "    const rnd = new RandomUtils();\r",
+              "    try {\r",
+              "        const creator = await api.addUser(rnd.getUser());\r",
+              "        const participant = await api.addUser(rnd.getUser());\r",
+              "        const category = await api.addCategory(rnd.getCategory());\r",
+              "        let event = await api.addEvent(creator.id, rnd.getFutureEvent(category.id));\r",
+              "        event = await api.publishEvent(event.id);\r",
+              "        const req = await api.addRequest(participant.id, event.id);\r",
+              "        await api.confirmRequest(creator.id, event.id, [req.id]);\r",
+              "        await api.addComment(participant.id, event.id, { text: \"Первый\" });\r",
+              "        \r",
+              "        pm.request.url = `http://localhost:8080/users/${participant.id}/events/${event.id}/comment`;\r",
+              "        pm.request.body.update({ mode: 'raw', raw: JSON.stringify({ text: \"Второй\" }) });\r",
+              "    } catch(err) { console.error(err); }\r",
+              "};\r",
+              "setTimeout(main, 100);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 409\", () => pm.response.to.have.status(409));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "url": {"raw": "http://localhost:8080/users/1/events/1/comment", "host": ["localhost:8080"], "path": ["users", "1", "events", "1", "comment"]}
+      }
+    },
+    {
+      "name": "8. Ошибка - событие не опубликовано",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const main = async () => {\r",
+              "    const api = new API(pm);\r",
+              "    const rnd = new RandomUtils();\r",
+              "    try {\r",
+              "        const creator = await api.addUser(rnd.getUser());\r",
+              "        const participant = await api.addUser(rnd.getUser());\r",
+              "        const category = await api.addCategory(rnd.getCategory());\r",
+              "        let event = await api.addEvent(creator.id, rnd.getFutureEvent(category.id));\r",
+              "        // НЕ публикуем событие\r",
+              "        \r",
+              "        pm.request.url = `http://localhost:8080/users/${participant.id}/events/${event.id}/comment`;\r",
+              "        pm.request.body.update({ mode: 'raw', raw: JSON.stringify({ text: \"Тест\" }) });\r",
+              "    } catch(err) { console.error(err); }\r",
+              "};\r",
+              "setTimeout(main, 100);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус 409\", () => pm.response.to.have.status(409));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{}"},
+        "url": {"raw": "http://localhost:8080/users/1/events/1/comment", "host": ["localhost:8080"], "path": ["users", "1", "events", "1", "comment"]}
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "API = class {",
+          "    constructor(pm) { this.pm = pm; }",
+          "    async addUser(user) { return this._req('POST', '/admin/users', user); }",
+          "    async addCategory(cat) { return this._req('POST', '/admin/categories', cat); }",
+          "    async addEvent(uid, ev) { return this._req('POST', `/users/${uid}/events`, ev); }",
+          "    async publishEvent(eid) { return this._req('PATCH', `/admin/events/${eid}`, {stateAction: 'PUBLISH_EVENT'}); }",
+          "    async addRequest(uid, eid) { return this._req('POST', `/users/${uid}/requests?eventId=${eid}`, {}); }",
+          "    async confirmRequest(uid, eid, reqIds) { ",
+          "        return this._req('PATCH', `/users/${uid}/events/${eid}/requests`, {requestIds: reqIds, status: 'CONFIRMED'}); ",
+          "    }",
+          "    async addComment(uid, eid, comment) {",
+          "        return this._req('POST', `/users/${uid}/events/${eid}/comment`, comment);",
+          "    }",
+          "    async _req(method, path, body) {",
+          "        return new Promise((resolve, reject) => {",
+          "            this.pm.sendRequest({",
+          "                url: 'http://localhost:8080' + path,",
+          "                method: method,",
+          "                body: JSON.stringify(body),",
+          "                header: {'Content-Type': 'application/json'}",
+          "            }, (err, res) => err ? reject(err) : res.code < 400 ? resolve(res.json()) : reject(res.text()));",
+          "        });",
+          "    }",
+          "};",
+          "RandomUtils = class {",
+          "    getUser() { return { name: pm.variables.replaceIn('{{$randomFullName}}'), email: pm.variables.replaceIn('{{$randomEmail}}') }; }",
+          "    getCategory() { return { name: pm.variables.replaceIn('{{$randomWord}}') + Date.now() }; }",
+          "    getFutureEvent(catId) {",
+          "        const m = require('moment');",
+          "        return {",
+          "            annotation: 'Это тестовая аннотация длиной более двадцати символов',",
+          "            category: catId,",
+          "            description: 'Это тестовое описание события, которое должно быть длиной более двадцати символов для прохождения валидации',",
+          "            location: { lat: 55.7558, lon: 37.6176 },",
+          "            paid: false, participantLimit: 10, requestModeration: true,",
+          "            title: 'Тестовое событие ' + Date.now(),",
+          "            eventDate: m().add(3, 'hours').format('YYYY-MM-DD HH:mm:ss')",
+          "        };",
+          "    }",
+          "};"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {"key": "userId", "value": ""},
+    {"key": "eventId", "value": ""},
+    {"key": "commentId", "value": ""}
+  ]
+}

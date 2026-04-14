@@ -53,9 +53,6 @@ public class CompilationMapper {
         if (dto.pinned() != null) {
             compilation.setPinned(dto.pinned());
         }
-        if (dto.events() != null) {
-            compilation.setEvents(mapIdsToEvents(dto.events()));
-        }
     }
 
     private Set<Event> mapIdsToEvents(Set<Long> eventIds) {

@@ -63,4 +63,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationRequ
     List<ParticipationRequest> findAllByEventId(Long eventId);
 
     boolean existsByRequesterIdAndEventId(Long userId, Long eventId);
+
+    boolean existsByRequesterIdAndEventIdAndStatus(Long userId, Long eventId, RequestStatus requestStatus);
 }

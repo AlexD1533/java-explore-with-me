@@ -40,6 +40,8 @@ public class ParticipationService {
         Integer confirmedRequests = participationRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         validation.limitRequestsValidation(event, confirmedRequests);
 
+        int currentConfirmedRequestsCount = confirmedRequests;
+
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         List<ParticipationRequest> updateRequests = new ArrayList<>();
 
@@ -48,7 +50,7 @@ public class ParticipationService {
 
 
         if (request.getStatus() == RequestStatus.CONFIRMED) {
-            requestsForUpdate.forEach(r -> {
+            for (ParticipationRequest r : requestsForUpdate) {
 
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
@@ -59,22 +61,22 @@ public class ParticipationService {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
-                }
+                    currentConfirmedRequestsCount++;
 
-                if (event.getParticipantLimit() > confirmedRequests && result.getConfirmedRequests().size() < event.getParticipantLimit()) {
+                } else if (event.getParticipantLimit() > confirmedRequests && currentConfirmedRequestsCount < event.getParticipantLimit()) {
                     r.setStatus(RequestStatus.CONFIRMED);
                     updateRequests.add(r);
                     result.getConfirmedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
+                    currentConfirmedRequestsCount++;
+
                 } else {
                     r.setStatus(RequestStatus.REJECTED);
                     updateRequests.add(r);
                     result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
                 }
-            });
-        }
-
-        if (request.getStatus() == RequestStatus.REJECTED) {
-            requestsForUpdate.forEach(r -> {
+            }
+        } else if (request.getStatus() == RequestStatus.REJECTED) {
+            for (ParticipationRequest r : requestsForUpdate) {
 
                 if (!r.getStatus().equals(RequestStatus.PENDING)) {
                     throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания");
@@ -83,7 +85,7 @@ public class ParticipationService {
                 r.setStatus(RequestStatus.REJECTED);
                 updateRequests.add(r);
                 result.getRejectedRequests().add(requestParticipationMapper.toParticipationRequestDto(r));
-            });
+            }
         }
         participationRepository.saveAll(updateRequests);
         return result;
